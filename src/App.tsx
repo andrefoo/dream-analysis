@@ -54,7 +54,7 @@ const DreamAnalysisApp = () => {
 
     // Simulate loading time
     setTimeout(() => {
-      // setAnalysis(sampleAnalysis);
+      setAnalysis(sampleAnalysis);
       setIsTyping(false);
     }, 1500);
   };
@@ -62,13 +62,13 @@ const DreamAnalysisApp = () => {
   // Text animation effect for the analysis response
   useEffect(() => {
     if (analysis && !isTyping) {
-      // if (textIndex < analysis.emotional.length) {
+      if (textIndex < analysis.emotional.length) {
       const timeout = setTimeout(() => {
-        // setDisplayedText(analysis.emotional.substring(0, textIndex + 1));
+        setDisplayedText(analysis.emotional.substring(0, textIndex + 1));
         setTextIndex(textIndex + 1);
       }, 20);
       return () => clearTimeout(timeout);
-      // }
+      }
     }
   }, [analysis, textIndex, isTyping]);
 
@@ -114,10 +114,10 @@ const DreamAnalysisApp = () => {
               x: Math.random() * window.innerWidth,
               y: Math.random() * window.innerHeight,
             }}
-            // animate={{
-            //   y: [null, Math.random() * -100, null],
-            //   opacity: [0.4, 0.8, 0.4]
-            // }}
+            animate={{
+              y: [null, Math.random() * -100, null],
+              opacity: [0.4, 0.8, 0.4]
+            }}
             transition={{
               duration: 3 + Math.random() * 7,
               repeat: Infinity,
@@ -296,7 +296,7 @@ const DreamAnalysisApp = () => {
                 </div>
 
                 {/* Symbolism cards - Only show after typing animation completes */}
-                {/* {analysis && displayedText === analysis.emotional && (
+                {analysis && displayedText === analysis.emotional && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -318,10 +318,10 @@ const DreamAnalysisApp = () => {
                       ))}
                     </div>
                   </motion.div>
-                )} */}
+                )}
 
                 {/* Advice section - Only show after typing animation completes */}
-                {/* {analysis && displayedText === analysis.emotional && (
+                {analysis && displayedText === analysis.emotional && (
                   <motion.div
                     className="mt-6 bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-4"
                     initial={{ opacity: 0, y: 20 }}
@@ -331,7 +331,7 @@ const DreamAnalysisApp = () => {
                     <p className="text-white font-medium mb-2">Suggested Actions:</p>
                     <p className="text-white text-opacity-90">{analysis.advice}</p>
                   </motion.div>
-                )} */}
+                )}
 
                 {/* Back button */}
                 <div className="flex justify-center mt-6">
