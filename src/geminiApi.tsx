@@ -13,11 +13,11 @@ class GeminiApi {
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,
-      config: {
-        responseSchema: {
-          
-        }
-      }
+      // config: {
+      //   responseSchema: {
+
+      //   }
+      // }
     });
     return response.text as string;
   }
