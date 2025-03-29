@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Dimens
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Brain, Heart, Star, Zap, Moon, Send, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react-native';
-import GeminiApi from './src/services/geminiApi';
+import DreamAnalysisService from './src/services/dreamAnalysisService';
 
 interface SymbolismItem {
   symbol: string;
@@ -78,7 +78,7 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
   const analyzeDream = async () => {
     try {
       setIsLoading(true);
-      const analysis = await GeminiApi.query(dream);
+      const analysis = await DreamAnalysisService.analyzeDream(dream, mood);
       navigation.navigate('Analysis', { analysis });
     } catch (error) {
       console.error('Error analyzing dream:', error);

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -11,8 +12,49 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import GeminiApi from "./geminiApi";
+
+// Interface for the backend API
+interface DreamAnalysisAPI {
+  analyzeDream: (dreamText: string, mood: string) => Promise<{ analysis: string, symbols?: SymbolismItem[] }>;
+}
+
+// API implementation that communicates with the Python backend
+const dreamAPI: DreamAnalysisAPI = {
+  analyzeDream: async (dreamText: string, mood: string): Promise<{ analysis: string, symbols?: SymbolismItem[] }> => {
+    try {
+      // Make a fetch call to the Python backend using the modules
+      const response = await fetch('/api/analyze-dream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          narrative: dreamText,
+          mainSymbols: dreamText.split(' ').filter(word => word.length > 5).slice(0, 3), // Extract some keywords as symbols
+          primaryEmotion: mood,
+          emotionalIntensity: mood === 'peaceful' ? 2 : mood === 'scary' ? 5 : 3, // Map mood to intensity
+          lifeConnection: "This connects to my current life situation."
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Backend responded with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      return {
+        analysis: data.analysis,
+        symbols: data.symbols
+      };
+    } catch (error) {
+      console.error("Error analyzing dream:", error);
+      return {
+        analysis: "Sorry, I couldn't analyze your dream at this time. The backend service might be unavailable."
+      };
+    }
+  }
+};
 
 interface SymbolismItem {
   symbol: string;
@@ -98,15 +140,21 @@ const DreamAnalysisApp = () => {
       "Consider journaling about areas in your life where you feel both excited and anxious. Mindfulness meditation may help you embrace the uncertainty of transition periods. Try visualizing yourself successfully navigating this change before sleep each night.",
   };
 
-  // Function to simulate API call for dream analysis
+  // Function to analyze dream
   const analyzeDream = async () => {
     setView("analysis");
     setIsTyping(true);
-    const response = await GeminiApi.query(dream);
-    sampleAnalysis.emotional = response;
+    const response = await dreamAPI.analyzeDream(dream, mood);
+    
+    // Update the symbolism if available from the API
+    if (response.symbols) {
+      sampleAnalysis.symbolism = response.symbols;
+    }
+    
+    sampleAnalysis.emotional = response.analysis;
     setAnalysis(sampleAnalysis);
     setIsTyping(false);
-    console.log(response);
+    console.log(response.analysis);
   };
 
   // Text animation effect for the analysis response
