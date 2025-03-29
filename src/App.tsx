@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Moon, Send, Sparkles } from "lucide-react";
+import { ArrowRight, Moon, Send, Sparkles, BookOpen, Brain, Heart, Star, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface SymbolismItem {
@@ -22,6 +22,31 @@ const DreamAnalysisApp = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [displayedText, setDisplayedText] = useState("");
   const [textIndex, setTextIndex] = useState(0);
+
+  // Add new state for features carousel
+  const [currentFeature, setCurrentFeature] = useState(0);
+  const features = [
+    {
+      icon: <Brain className="w-8 h-8" />,
+      title: "AI-Powered Analysis",
+      description: "Advanced algorithms analyze your dream patterns and symbolism"
+    },
+    {
+      icon: <Heart className="w-8 h-8" />,
+      title: "Personalized Insights",
+      description: "Get tailored interpretations based on your emotions and context"
+    },
+    {
+      icon: <BookOpen className="w-8 h-8" />,
+      title: "Dream Journal",
+      description: "Track your dreams over time and identify recurring patterns"
+    },
+    {
+      icon: <Star className="w-8 h-8" />,
+      title: "Symbol Dictionary",
+      description: "Explore common dream symbols and their meanings"
+    }
+  ];
 
   // Sample moods for the mood selector
   const moods = [
@@ -95,19 +120,19 @@ const DreamAnalysisApp = () => {
   const getMoodGradient = () => {
     switch (mood) {
       case "peaceful":
-        return "bg-gradient-to-br from-blue-400 to-purple-500";
+        return "bg-gradient-to-br from-dream-blue to-dream-purple";
       case "scary":
-        return "bg-gradient-to-br from-red-900 to-gray-900";
+        return "bg-gradient-to-br from-black to-dream-dark-pink";
       case "confusing":
-        return "bg-gradient-to-br from-yellow-400 to-purple-600";
+        return "bg-gradient-to-br from-dream-purple to-dream-dark-pink";
       case "exciting":
-        return "bg-gradient-to-br from-pink-500 to-orange-400";
+        return "bg-gradient-to-br from-dream-orange to-dream-pink";
       case "sad":
-        return "bg-gradient-to-br from-blue-800 to-gray-900";
+        return "bg-gradient-to-br from-dream-blue to-dream-dark-pink";
       case "nostalgic":
-        return "bg-gradient-to-br from-amber-500 to-pink-300";
+        return "bg-gradient-to-br from-dream-pink to-dream-purple";
       default:
-        return "bg-gradient-to-br from-indigo-500 to-purple-600";
+        return "bg-gradient-to-br from-dream-purple to-dream-blue";
     }
   };
 
@@ -171,23 +196,114 @@ const DreamAnalysisApp = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <Sparkles className="w-16 h-16 text-white mb-4" />
-                <h2 className="text-white text-xl font-semibold mb-3">
-                  Discover the meaning behind your dreams
-                </h2>
-                <p className="text-white text-opacity-80 mb-6">
-                  Our AI-powered analysis provides personalized insights into
-                  your subconscious mind.
-                </p>
-                <motion.button
-                  className="bg-white text-purple-600 font-medium py-3 px-6 rounded-full flex items-center"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setView("input")}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", duration: 1 }}
                 >
-                  Begin Your Journey
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </motion.button>
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-dream-orange to-dream-dark-pink rounded-full blur opacity-75 animate-pulse"></div>
+                    <div className="relative bg-black bg-opacity-30 p-4 rounded-full backdrop-blur-sm">
+                      <Moon className="w-16 h-16 text-dream-pink" />
+                    </div>
+                  </div>
+                </motion.div>
+                
+                <motion.h1 
+                  className="text-white text-4xl font-bold mt-6 mb-2"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  DreamSight
+                </motion.h1>
+                
+                <motion.p 
+                  className="text-white text-xl text-opacity-80 mb-8"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  Discover the meaning behind your dreams
+                </motion.p>
+
+                {/* Features Carousel */}
+                <motion.div 
+                  className="w-full max-w-md mb-8"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="relative">
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+                      <motion.button
+                        className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setCurrentFeature((prev) => (prev - 1 + features.length) % features.length)}
+                      >
+                        <ChevronLeft className="w-6 h-6 text-white" />
+                      </motion.button>
+                    </div>
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
+                      <motion.button
+                        className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setCurrentFeature((prev) => (prev + 1) % features.length)}
+                      >
+                        <ChevronRight className="w-6 h-6 text-white" />
+                      </motion.button>
+                    </div>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentFeature}
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -100 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-black bg-opacity-30 backdrop-blur-sm rounded-xl p-6"
+                      >
+                        <div className="flex justify-center mb-4 text-dream-pink">
+                          {features[currentFeature].icon}
+                        </div>
+                        <h3 className="text-white text-lg font-semibold mb-2">
+                          {features[currentFeature].title}
+                        </h3>
+                        <p className="text-white text-opacity-80">
+                          {features[currentFeature].description}
+                        </p>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+
+                {/* Action Buttons */}
+                <motion.div 
+                  className="flex flex-col sm:flex-row gap-4"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <motion.button
+                    className="bg-dream-orange text-white font-medium py-3 px-6 rounded-full flex items-center"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setView("input")}
+                  >
+                    Begin Your Journey
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </motion.button>
+                  <motion.button
+                    className="bg-dream-dark-pink text-white font-medium py-3 px-6 rounded-full flex items-center"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => window.open('https://en.wikipedia.org/wiki/Dream_interpretation', '_blank')}
+                  >
+                    Learn More
+                    <Zap className="ml-2 w-4 h-4" />
+                  </motion.button>
+                </motion.div>
               </motion.div>
             )}
 
@@ -205,7 +321,7 @@ const DreamAnalysisApp = () => {
                   Tell me about your dream...
                 </h2>
                 <textarea
-                  className="w-full p-4 rounded-lg bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-60 border border-white border-opacity-20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-30 resize-none transition"
+                  className="w-full p-4 rounded-lg bg-black bg-opacity-30 text-white placeholder-white placeholder-opacity-60 border border-dream-pink border-opacity-20 focus:outline-none focus:ring-2 focus:ring-dream-pink focus:ring-opacity-30 resize-none transition"
                   rows={5}
                   placeholder="I was flying over a crystal clear lake, then suddenly started falling..."
                   value={dream}
@@ -223,8 +339,8 @@ const DreamAnalysisApp = () => {
                         key={m}
                         className={`py-2 px-4 rounded-full text-sm font-medium transition ${
                           mood === m
-                            ? "bg-white text-purple-700"
-                            : "bg-white bg-opacity-20 text-white hover:bg-opacity-30"
+                            ? "bg-dream-orange text-white"
+                            : "bg-black bg-opacity-30 text-white hover:bg-opacity-50"
                         }`}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -241,8 +357,8 @@ const DreamAnalysisApp = () => {
                   <motion.button
                     className={`flex items-center py-3 px-6 rounded-full font-medium ${
                       dream && mood
-                        ? "bg-white text-purple-700"
-                        : "bg-white bg-opacity-20 text-white cursor-not-allowed"
+                        ? "bg-dream-orange text-white"
+                        : "bg-black bg-opacity-30 text-white cursor-not-allowed"
                     }`}
                     whileHover={dream && mood ? { scale: 1.05 } : {}}
                     whileTap={dream && mood ? { scale: 0.95 } : {}}
@@ -268,10 +384,10 @@ const DreamAnalysisApp = () => {
               >
                 {/* Chatbot style message - User's dream */}
                 <div className="flex justify-end mb-4">
-                  <div className="bg-white text-purple-700 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl py-3 px-4 max-w-xs">
+                  <div className="bg-dream-orange text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl py-3 px-4 max-w-xs">
                     <p className="text-sm font-medium">My dream:</p>
                     <p>{dream}</p>
-                    <p className="text-xs text-right mt-1 text-purple-500">
+                    <p className="text-xs text-right mt-1 text-white text-opacity-80">
                       Feeling: {mood}
                     </p>
                   </div>
@@ -279,7 +395,7 @@ const DreamAnalysisApp = () => {
 
                 {/* Loading animation or AI response */}
                 <div className="flex mb-4">
-                  <div className="bg-purple-600 text-white rounded-tr-2xl rounded-br-2xl rounded-bl-2xl py-3 px-4 max-w-xs">
+                  <div className="bg-dream-dark-pink text-white rounded-tr-2xl rounded-br-2xl rounded-bl-2xl py-3 px-4 max-w-xs">
                     {isTyping ? (
                       <div className="flex items-center space-x-2">
                         <div
@@ -306,7 +422,7 @@ const DreamAnalysisApp = () => {
                   </div>
                 </div>
 
-                {/* Symbolism cards - Only show after typing animation completes */}
+                {/* Symbolism cards */}
                 {analysis && displayedText === analysis.emotional && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -318,12 +434,12 @@ const DreamAnalysisApp = () => {
                       {analysis.symbolism.map((item, index) => (
                         <motion.div
                           key={index}
-                          className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-3"
+                          className="bg-black bg-opacity-30 backdrop-blur-sm rounded-lg p-3"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.7 + index * 0.2 }}
                         >
-                          <h3 className="text-white font-medium">{item.symbol}</h3>
+                          <h3 className="text-dream-pink font-medium">{item.symbol}</h3>
                           <p className="text-white text-opacity-80 text-sm">{item.meaning}</p>
                         </motion.div>
                       ))}
@@ -331,15 +447,15 @@ const DreamAnalysisApp = () => {
                   </motion.div>
                 )}
 
-                {/* Advice section - Only show after typing animation completes */}
+                {/* Advice section */}
                 {analysis && displayedText === analysis.emotional && (
                   <motion.div
-                    className="mt-6 bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-4"
+                    className="mt-6 bg-black bg-opacity-30 backdrop-blur-sm rounded-lg p-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.3 }}
                   >
-                    <p className="text-white font-medium mb-2">Suggested Actions:</p>
+                    <p className="text-dream-pink font-medium mb-2">Suggested Actions:</p>
                     <p className="text-white text-opacity-90">{analysis.advice}</p>
                   </motion.div>
                 )}
@@ -347,7 +463,7 @@ const DreamAnalysisApp = () => {
                 {/* Back button */}
                 <div className="flex justify-center mt-6">
                   <motion.button
-                    className="flex items-center py-2 px-5 rounded-full font-medium bg-white bg-opacity-20 text-white hover:bg-opacity-30"
+                    className="flex items-center py-2 px-5 rounded-full font-medium bg-black bg-opacity-30 text-white hover:bg-opacity-50"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setView("input")}
