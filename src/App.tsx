@@ -136,27 +136,209 @@ const DreamAnalysisApp = () => {
   const getMoodGradient = () => {
     switch (mood) {
       case "peaceful":
-        return "bg-gradient-to-br from-dream-blue to-dream-purple";
+        return "bg-dream-black bg-gradient-to-br from-dream-blue/20 to-dream-purple/20";
       case "scary":
-        return "bg-gradient-to-br from-black to-dream-dark-pink";
+        return "bg-dream-black bg-gradient-to-br from-dream-dark-purple/20 to-dream-pink-red/20";
       case "confusing":
-        return "bg-gradient-to-br from-dream-purple to-dream-dark-pink";
+        return "bg-dream-black bg-gradient-to-br from-dream-purple/20 to-dream-dark-pink/20";
       case "exciting":
-        return "bg-gradient-to-br from-dream-orange to-dream-pink";
+        return "bg-dream-black bg-gradient-to-br from-dream-orange/20 to-dream-pink/20";
       case "sad":
-        return "bg-gradient-to-br from-dream-blue to-dream-dark-pink";
+        return "bg-dream-black bg-gradient-to-br from-dream-dark-purple/20 to-dream-dark-pink/20";
       case "nostalgic":
-        return "bg-gradient-to-br from-dream-pink to-dream-purple";
+        return "bg-dream-black bg-gradient-to-br from-dream-pink/20 to-dream-purple/20";
       default:
-        return "bg-gradient-to-br from-dream-purple to-dream-blue";
+        return "bg-dream-black bg-gradient-to-br from-dream-purple/20 to-dream-blue/20";
     }
   };
 
   return (
     <div
-      className={`min-h-screen flex flex-col items-center justify-center transition-all duration-1000 ${getMoodGradient()}`}
+      className={`min-h-screen w-full flex flex-col items-center justify-center transition-all duration-1000 ${getMoodGradient()}`}
     >
-      {/* Floating particles/stars effect */}
+      {/* Animated background graphics */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {/* Animated moons */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={`moon-${i}`}
+            className="absolute"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.4, 0.7, 0.4],
+              rotate: [0, 15, 0],
+            }}
+            transition={{
+              duration: 5 + Math.random() * 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <Moon className="w-6 h-6 text-white" />
+          </motion.div>
+        ))}
+
+        {/* Animated stars */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={`star-${i}`}
+            className="absolute"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.3, 0.8, 0.3],
+              rotate: [0, 180, 360],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <Star className="w-4 h-4 text-white" />
+          </motion.div>
+        ))}
+
+        {/* Floating circles - increased number and size variation */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={`circle-${i}`}
+            className="absolute rounded-full"
+            style={{
+              width: Math.random() * 500 + 200,
+              height: Math.random() * 500 + 200,
+              background: `radial-gradient(circle, ${i % 2 === 0 ? '#9678d1' : '#889adc'}15, transparent 70%)`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              x: [0, Math.random() * 200 - 100, 0],
+              y: [0, Math.random() * 200 - 100, 0],
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 15 + Math.random() * 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Floating lines - increased number and length */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={`line-${i}`}
+            className="absolute h-[1px]"
+            style={{
+              width: Math.random() * 400 + 200,
+              background: `linear-gradient(90deg, transparent, ${i % 2 === 0 ? '#e688af' : '#ec7058'}20, transparent)`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              transform: `rotate(${Math.random() * 360}deg)`,
+            }}
+            animate={{
+              x: [0, Math.random() * 300 - 150, 0],
+              y: [0, Math.random() * 300 - 150, 0],
+              rotate: [0, 180, 360],
+              opacity: [0.15, 0.3, 0.15],
+            }}
+            transition={{
+              duration: 20 + Math.random() * 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Glowing dots - increased number and spread */}
+        {[...Array(40)].map((_, i) => (
+          <motion.div
+            key={`dot-${i}`}
+            className="absolute w-2 h-2 rounded-full"
+            style={{
+              background: `radial-gradient(circle, ${i % 3 === 0 ? '#e688af' : i % 3 === 1 ? '#ec7058' : '#9678d1'}30, transparent 70%)`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              filter: 'blur(1px)',
+            }}
+            animate={{
+              y: [0, Math.random() * -200, 0],
+              opacity: [0.3, 0.6, 0.3],
+              scale: [1, 1.8, 1],
+            }}
+            transition={{
+              duration: 5 + Math.random() * 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Animated mesh pattern - increased size and opacity */}
+        <div className="absolute inset-0 opacity-15">
+          <svg width="100%" height="100%">
+            <pattern
+              id="mesh-pattern"
+              x="0"
+              y="0"
+              width="60"
+              height="60"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 60 0 L 0 0 0 60"
+                fill="none"
+                stroke="url(#mesh-gradient)"
+                strokeWidth="0.5"
+              />
+              <defs>
+                <linearGradient id="mesh-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#9678d1" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#889adc" stopOpacity="0.2" />
+                </linearGradient>
+              </defs>
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#mesh-pattern)" />
+          </svg>
+        </div>
+
+        {/* Additional floating shapes */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={`shape-${i}`}
+            className="absolute"
+            style={{
+              width: Math.random() * 100 + 50,
+              height: Math.random() * 100 + 50,
+              background: `radial-gradient(circle, ${i % 2 === 0 ? '#b03e70' : '#871d78'}10, transparent 70%)`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              clipPath: i % 2 === 0 ? 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' : 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+            }}
+            animate={{
+              x: [0, Math.random() * 150 - 75, 0],
+              y: [0, Math.random() * 150 - 75, 0],
+              rotate: [0, 180, 360],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 12 + Math.random() * 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Existing floating particles/stars effect */}
       <div className="fixed inset-0 pointer-events-none">
         {[...Array(20)].map((_, i) => (
           <motion.div
@@ -180,7 +362,7 @@ const DreamAnalysisApp = () => {
       </div>
 
       {/* App content */}
-      <div className="z-10 w-full max-w-xl px-4">
+      <div className="z-10 w-full max-w-xl px-4 relative">
         {/* App logo and header */}
         <motion.div
           className="flex items-center justify-center mb-6"
@@ -218,15 +400,15 @@ const DreamAnalysisApp = () => {
                   transition={{ type: "spring", duration: 1 }}
                 >
                   <div className="relative">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-dream-orange to-dream-dark-pink rounded-full blur opacity-75 animate-pulse"></div>
-                    <div className="relative bg-black bg-opacity-30 p-4 rounded-full backdrop-blur-sm">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-dream-orange to-dream-pink-red rounded-full blur opacity-75 animate-pulse"></div>
+                    <div className="relative bg-dream-black bg-opacity-30 p-4 rounded-full backdrop-blur-sm">
                       <Moon className="w-16 h-16 text-dream-pink" />
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.h1
-                  className="text-white text-4xl font-bold mt-6 mb-2"
+                  className="text-white text-4xl font-bold mt-6 mb-2 font-title"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -235,7 +417,7 @@ const DreamAnalysisApp = () => {
                 </motion.h1>
 
                 <motion.p
-                  className="text-white text-xl text-opacity-80 mb-8"
+                  className="text-white text-xl text-opacity-80 mb-8 font-sans"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
@@ -287,7 +469,7 @@ const DreamAnalysisApp = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-black bg-opacity-30 backdrop-blur-sm rounded-xl p-6"
+                        className="bg-dream-black bg-opacity-30 backdrop-blur-sm rounded-xl p-6"
                       >
                         <div className="flex justify-center mb-4 text-dream-pink">
                           {features[currentFeature].icon}
@@ -311,7 +493,7 @@ const DreamAnalysisApp = () => {
                   transition={{ delay: 0.5 }}
                 >
                   <motion.button
-                    className="bg-dream-orange text-white font-medium py-3 px-6 rounded-full flex items-center"
+                    className="bg-dream-orange text-white font-medium py-3 px-6 rounded-full flex items-center hover:bg-dream-pink-red transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setView("input")}
@@ -320,7 +502,7 @@ const DreamAnalysisApp = () => {
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </motion.button>
                   <motion.button
-                    className="bg-dream-dark-pink text-white font-medium py-3 px-6 rounded-full flex items-center"
+                    className="bg-dream-dark-purple text-white font-medium py-3 px-6 rounded-full flex items-center hover:bg-dream-dark-pink transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() =>
@@ -347,11 +529,11 @@ const DreamAnalysisApp = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-white text-lg font-semibold mb-4">
+                <h2 className="text-white text-lg font-semibold mb-4 font-title">
                   Tell me about your dream...
                 </h2>
                 <textarea
-                  className="w-full p-4 rounded-lg bg-black bg-opacity-30 text-white placeholder-white placeholder-opacity-60 border border-dream-pink border-opacity-20 focus:outline-none focus:ring-2 focus:ring-dream-pink focus:ring-opacity-30 resize-none transition"
+                  className="w-full p-4 rounded-lg bg-dream-black bg-opacity-30 text-white placeholder-white placeholder-opacity-60 border border-dream-pink border-opacity-20 focus:outline-none focus:ring-2 focus:ring-dream-pink focus:ring-opacity-30 resize-none transition"
                   rows={5}
                   placeholder="I was flying over a crystal clear lake, then suddenly started falling..."
                   value={dream}
@@ -360,7 +542,7 @@ const DreamAnalysisApp = () => {
 
                 {/* Mood selector */}
                 <div className="mt-4">
-                  <p className="text-white text-opacity-90 mb-2">
+                  <p className="text-white text-opacity-90 mb-2 font-sans">
                     How did this dream make you feel?
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -369,8 +551,8 @@ const DreamAnalysisApp = () => {
                         key={m}
                         className={`py-2 px-4 rounded-full text-sm font-medium transition ${
                           mood === m
-                            ? "bg-dream-orange text-white"
-                            : "bg-black bg-opacity-30 text-white hover:bg-opacity-50"
+                            ? "bg-dream-orange text-white hover:bg-dream-pink-red"
+                            : "bg-dream-black bg-opacity-30 text-white hover:bg-opacity-50"
                         }`}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -387,8 +569,8 @@ const DreamAnalysisApp = () => {
                   <motion.button
                     className={`flex items-center py-3 px-6 rounded-full font-medium ${
                       dream && mood
-                        ? "bg-dream-orange text-white"
-                        : "bg-black bg-opacity-30 text-white cursor-not-allowed"
+                        ? "bg-dream-orange text-white hover:bg-dream-pink-red"
+                        : "bg-dream-black bg-opacity-30 text-white cursor-not-allowed"
                     }`}
                     whileHover={dream && mood ? { scale: 1.05 } : {}}
                     whileTap={dream && mood ? { scale: 0.95 } : {}}
@@ -415,7 +597,7 @@ const DreamAnalysisApp = () => {
                 {/* Chatbot style message - User's dream */}
                 <div className="flex justify-end mb-4">
                   <div className="bg-dream-orange text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl py-3 px-4 max-w-xs">
-                    <p className="text-sm font-medium">My dream:</p>
+                    <p className="text-sm font-medium font-title">My dream:</p>
                     <p>{dream}</p>
                     <p className="text-xs text-right mt-1 text-white text-opacity-80">
                       Feeling: {mood}
@@ -425,7 +607,7 @@ const DreamAnalysisApp = () => {
 
                 {/* Loading animation or AI response */}
                 <div className="flex mb-4">
-                  <div className="bg-dream-dark-pink text-white rounded-tr-2xl rounded-br-2xl rounded-bl-2xl py-3 px-4 max-w-xs">
+                  <div className="bg-dream-dark-purple text-white rounded-tr-2xl rounded-br-2xl rounded-bl-2xl py-3 px-4 max-w-xs">
                     {isTyping ? (
                       <div className="flex items-center space-x-2">
                         <div
@@ -443,7 +625,7 @@ const DreamAnalysisApp = () => {
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm font-medium">
+                        <p className="text-sm font-medium font-title">
                           Dream Interpretation:
                         </p>
                         <p>{displayedText}</p>
@@ -459,22 +641,22 @@ const DreamAnalysisApp = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <p className="text-white font-medium mt-6 mb-3">
+                    <p className="text-white font-medium mt-6 mb-3 font-title">
                       Symbolic Elements:
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {analysis.symbolism.map((item, index) => (
                         <motion.div
                           key={index}
-                          className="bg-black bg-opacity-30 backdrop-blur-sm rounded-lg p-3"
+                          className="bg-dream-black bg-opacity-30 backdrop-blur-sm rounded-lg p-3"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.7 + index * 0.2 }}
                         >
-                          <h3 className="text-dream-pink font-medium">
+                          <h3 className="text-dream-pink font-medium font-title">
                             {item.symbol}
                           </h3>
-                          <p className="text-white text-opacity-80 text-sm">
+                          <p className="text-white text-opacity-80 text-sm font-sans">
                             {item.meaning}
                           </p>
                         </motion.div>
@@ -486,15 +668,15 @@ const DreamAnalysisApp = () => {
                 {/* Advice section */}
                 {analysis && displayedText === analysis.emotional && (
                   <motion.div
-                    className="mt-6 bg-black bg-opacity-30 backdrop-blur-sm rounded-lg p-4"
+                    className="mt-6 bg-dream-black bg-opacity-30 backdrop-blur-sm rounded-lg p-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.3 }}
                   >
-                    <p className="text-dream-pink font-medium mb-2">
+                    <p className="text-dream-pink font-medium mb-2 font-title">
                       Suggested Actions:
                     </p>
-                    <p className="text-white text-opacity-90">
+                    <p className="text-white text-opacity-90 font-sans">
                       {analysis.advice}
                     </p>
                   </motion.div>
@@ -503,7 +685,7 @@ const DreamAnalysisApp = () => {
                 {/* Back button */}
                 <div className="flex justify-center mt-6">
                   <motion.button
-                    className="flex items-center py-2 px-5 rounded-full font-medium bg-black bg-opacity-30 text-white hover:bg-opacity-50"
+                    className="flex items-center py-2 px-5 rounded-full font-medium bg-dream-black bg-opacity-30 text-white hover:bg-opacity-50"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setView("input")}
