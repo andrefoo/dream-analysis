@@ -1,6 +1,18 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Moon, Send, Sparkles, BookOpen, Brain, Heart, Star, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  Moon,
+  Send,
+  BookOpen,
+  Brain,
+  Heart,
+  Star,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useEffect, useState } from "react";
+import GeminiApi from "./geminiApi";
 
 interface SymbolismItem {
   symbol: string;
@@ -29,23 +41,26 @@ const DreamAnalysisApp = () => {
     {
       icon: <Brain className="w-8 h-8" />,
       title: "AI-Powered Analysis",
-      description: "Advanced algorithms analyze your dream patterns and symbolism"
+      description:
+        "Advanced algorithms analyze your dream patterns and symbolism",
     },
     {
       icon: <Heart className="w-8 h-8" />,
       title: "Personalized Insights",
-      description: "Get tailored interpretations based on your emotions and context"
+      description:
+        "Get tailored interpretations based on your emotions and context",
     },
     {
       icon: <BookOpen className="w-8 h-8" />,
       title: "Dream Journal",
-      description: "Track your dreams over time and identify recurring patterns"
+      description:
+        "Track your dreams over time and identify recurring patterns",
     },
     {
       icon: <Star className="w-8 h-8" />,
       title: "Symbol Dictionary",
-      description: "Explore common dream symbols and their meanings"
-    }
+      description: "Explore common dream symbols and their meanings",
+    },
   ];
 
   // Sample moods for the mood selector
@@ -84,8 +99,7 @@ const DreamAnalysisApp = () => {
   };
 
   // Function to simulate API call for dream analysis
-  const analyzeDream = () => {
-    setView("analysis");
+  const analyzeDream = async () => {
     setIsTyping(true);
 
     // Simulate loading time
@@ -93,17 +107,19 @@ const DreamAnalysisApp = () => {
       setAnalysis(sampleAnalysis);
       setIsTyping(false);
     }, 1500);
+    const response = await GeminiApi.query(dream);
+    console.log(response);
   };
 
   // Text animation effect for the analysis response
   useEffect(() => {
     if (analysis && !isTyping) {
       if (textIndex < analysis.emotional.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedText(analysis.emotional.substring(0, textIndex + 1));
-        setTextIndex(textIndex + 1);
-      }, 20);
-      return () => clearTimeout(timeout);
+        const timeout = setTimeout(() => {
+          setDisplayedText(analysis.emotional.substring(0, textIndex + 1));
+          setTextIndex(textIndex + 1);
+        }, 20);
+        return () => clearTimeout(timeout);
       }
     }
   }, [analysis, textIndex, isTyping]);
@@ -152,7 +168,7 @@ const DreamAnalysisApp = () => {
             }}
             animate={{
               y: [0, Math.random() * -100, 0],
-              opacity: [0.4, 0.8, 0.4]
+              opacity: [0.4, 0.8, 0.4],
             }}
             transition={{
               duration: 3 + Math.random() * 7,
@@ -208,8 +224,8 @@ const DreamAnalysisApp = () => {
                     </div>
                   </div>
                 </motion.div>
-                
-                <motion.h1 
+
+                <motion.h1
                   className="text-white text-4xl font-bold mt-6 mb-2"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -217,8 +233,8 @@ const DreamAnalysisApp = () => {
                 >
                   DreamSight
                 </motion.h1>
-                
-                <motion.p 
+
+                <motion.p
                   className="text-white text-xl text-opacity-80 mb-8"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -228,7 +244,7 @@ const DreamAnalysisApp = () => {
                 </motion.p>
 
                 {/* Features Carousel */}
-                <motion.div 
+                <motion.div
                   className="w-full max-w-md mb-8"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -240,7 +256,12 @@ const DreamAnalysisApp = () => {
                         className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => setCurrentFeature((prev) => (prev - 1 + features.length) % features.length)}
+                        onClick={() =>
+                          setCurrentFeature(
+                            (prev) =>
+                              (prev - 1 + features.length) % features.length
+                          )
+                        }
                       >
                         <ChevronLeft className="w-6 h-6 text-white" />
                       </motion.button>
@@ -250,7 +271,11 @@ const DreamAnalysisApp = () => {
                         className="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => setCurrentFeature((prev) => (prev + 1) % features.length)}
+                        onClick={() =>
+                          setCurrentFeature(
+                            (prev) => (prev + 1) % features.length
+                          )
+                        }
                       >
                         <ChevronRight className="w-6 h-6 text-white" />
                       </motion.button>
@@ -279,7 +304,7 @@ const DreamAnalysisApp = () => {
                 </motion.div>
 
                 {/* Action Buttons */}
-                <motion.div 
+                <motion.div
                   className="flex flex-col sm:flex-row gap-4"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -298,7 +323,12 @@ const DreamAnalysisApp = () => {
                     className="bg-dream-dark-pink text-white font-medium py-3 px-6 rounded-full flex items-center"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => window.open('https://en.wikipedia.org/wiki/Dream_interpretation', '_blank')}
+                    onClick={() =>
+                      window.open(
+                        "https://en.wikipedia.org/wiki/Dream_interpretation",
+                        "_blank"
+                      )
+                    }
                   >
                     Learn More
                     <Zap className="ml-2 w-4 h-4" />
@@ -429,7 +459,9 @@ const DreamAnalysisApp = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <p className="text-white font-medium mt-6 mb-3">Symbolic Elements:</p>
+                    <p className="text-white font-medium mt-6 mb-3">
+                      Symbolic Elements:
+                    </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {analysis.symbolism.map((item, index) => (
                         <motion.div
@@ -439,8 +471,12 @@ const DreamAnalysisApp = () => {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.7 + index * 0.2 }}
                         >
-                          <h3 className="text-dream-pink font-medium">{item.symbol}</h3>
-                          <p className="text-white text-opacity-80 text-sm">{item.meaning}</p>
+                          <h3 className="text-dream-pink font-medium">
+                            {item.symbol}
+                          </h3>
+                          <p className="text-white text-opacity-80 text-sm">
+                            {item.meaning}
+                          </p>
                         </motion.div>
                       ))}
                     </div>
@@ -455,8 +491,12 @@ const DreamAnalysisApp = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.3 }}
                   >
-                    <p className="text-dream-pink font-medium mb-2">Suggested Actions:</p>
-                    <p className="text-white text-opacity-90">{analysis.advice}</p>
+                    <p className="text-dream-pink font-medium mb-2">
+                      Suggested Actions:
+                    </p>
+                    <p className="text-white text-opacity-90">
+                      {analysis.advice}
+                    </p>
                   </motion.div>
                 )}
 
