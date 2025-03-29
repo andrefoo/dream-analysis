@@ -2,12 +2,23 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Moon, Send, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
+interface SymbolismItem {
+  symbol: string;
+  meaning: string;
+}
+
+interface Analysis {
+  symbolism: SymbolismItem[];
+  emotional: string;
+  advice: string;
+}
+
 const DreamAnalysisApp = () => {
   // State management
   const [view, setView] = useState("intro"); // intro, input, analysis
   const [dream, setDream] = useState("");
   const [mood, setMood] = useState("");
-  const [analysis, setAnalysis] = useState(null);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [displayedText, setDisplayedText] = useState("");
   const [textIndex, setTextIndex] = useState(0);
@@ -115,7 +126,7 @@ const DreamAnalysisApp = () => {
               y: Math.random() * window.innerHeight,
             }}
             animate={{
-              y: [null, Math.random() * -100, null],
+              y: [0, Math.random() * -100, 0],
               opacity: [0.4, 0.8, 0.4]
             }}
             transition={{
