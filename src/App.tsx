@@ -1,18 +1,19 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
-  Moon,
-  Send,
   BookOpen,
   Brain,
-  Heart,
-  Star,
-  Zap,
   ChevronLeft,
   ChevronRight,
+  Heart,
+  Moon,
+  Send,
+  Star,
+  Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import GeminiApi from "./geminiApi";
+import SupabaseService from "./supabase";
 
 interface SymbolismItem {
   symbol: string;
@@ -23,6 +24,7 @@ interface Analysis {
   symbolism: SymbolismItem[];
   emotional: string;
   advice: string;
+  imageUrl?: string; // Added for image URL
 }
 
 const DreamAnalysisApp = () => {
@@ -96,6 +98,7 @@ const DreamAnalysisApp = () => {
       "Your dream suggests you're experiencing a period of transition. The mixture of flying and falling points to ambivalence about a current life change - excitement about new possibilities but anxiety about potential failure. The peaceful water scenes reflect a desire for emotional calm amidst this change.",
     advice:
       "Consider journaling about areas in your life where you feel both excited and anxious. Mindfulness meditation may help you embrace the uncertainty of transition periods. Try visualizing yourself successfully navigating this change before sleep each night.",
+    imageUrl: "",
   };
 
   // Function to simulate API call for dream analysis
@@ -104,9 +107,13 @@ const DreamAnalysisApp = () => {
     setIsTyping(true);
     const response = await GeminiApi.query(dream);
     sampleAnalysis.emotional = response;
+    const imageUrl = SupabaseService.getPublicUrl(
+      "dream-images",
+      "IMG_4689.HEIC" //placeholder
+    );
+    sampleAnalysis.imageUrl = imageUrl;
     setAnalysis(sampleAnalysis);
     setIsTyping(false);
-    console.log(response);
   };
 
   // Text animation effect for the analysis response
@@ -694,6 +701,21 @@ const DreamAnalysisApp = () => {
                     <p className="text-white text-opacity-90 font-sans">
                       {analysis.advice}
                     </p>
+                  </motion.div>
+                )}
+
+                {analysis?.imageUrl && (
+                  <motion.div
+                    className="mt-6 flex justify-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.5 }}
+                  >
+                    <img
+                      src={analysis.imageUrl}
+                      alt="Dream Visualization"
+                      className="rounded-lg shadow-lg max-w-full h-auto"
+                    />
                   </motion.div>
                 )}
 
