@@ -100,14 +100,12 @@ const DreamAnalysisApp = () => {
 
   // Function to simulate API call for dream analysis
   const analyzeDream = async () => {
+    setView("analysis");
     setIsTyping(true);
-
-    // Simulate loading time
-    setTimeout(() => {
-      setAnalysis(sampleAnalysis);
-      setIsTyping(false);
-    }, 1500);
     const response = await GeminiApi.query(dream);
+    sampleAnalysis.emotional = response;
+    setAnalysis(sampleAnalysis);
+    setIsTyping(false);
     console.log(response);
   };
 
