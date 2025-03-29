@@ -1,28 +1,21 @@
 {
   "expo": {
-    "name": "dream-analysis-mobile",
-    "slug": "dream-analysis-mobile",
+    "name": "Dream Analysis",
+    "slug": "dream-analysis",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#000000"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "newArchEnabled": false
   }
-}
+} 
