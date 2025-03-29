@@ -214,7 +214,9 @@ const DreamAnalysisApp = () => {
             style={{
               width: Math.random() * 500 + 200,
               height: Math.random() * 500 + 200,
-              background: `radial-gradient(circle, ${i % 2 === 0 ? '#9678d1' : '#889adc'}15, transparent 70%)`,
+              background: `radial-gradient(circle, ${
+                i % 2 === 0 ? "#9678d1" : "#889adc"
+              }15, transparent 70%)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
             }}
@@ -239,7 +241,9 @@ const DreamAnalysisApp = () => {
             className="absolute h-[1px]"
             style={{
               width: Math.random() * 400 + 200,
-              background: `linear-gradient(90deg, transparent, ${i % 2 === 0 ? '#e688af' : '#ec7058'}20, transparent)`,
+              background: `linear-gradient(90deg, transparent, ${
+                i % 2 === 0 ? "#e688af" : "#ec7058"
+              }20, transparent)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               transform: `rotate(${Math.random() * 360}deg)`,
@@ -264,10 +268,12 @@ const DreamAnalysisApp = () => {
             key={`dot-${i}`}
             className="absolute w-2 h-2 rounded-full"
             style={{
-              background: `radial-gradient(circle, ${i % 3 === 0 ? '#e688af' : i % 3 === 1 ? '#ec7058' : '#9678d1'}30, transparent 70%)`,
+              background: `radial-gradient(circle, ${
+                i % 3 === 0 ? "#e688af" : i % 3 === 1 ? "#ec7058" : "#9678d1"
+              }30, transparent 70%)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              filter: 'blur(1px)',
+              filter: "blur(1px)",
             }}
             animate={{
               y: [0, Math.random() * -200, 0],
@@ -300,7 +306,13 @@ const DreamAnalysisApp = () => {
                 strokeWidth="0.5"
               />
               <defs>
-                <linearGradient id="mesh-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient
+                  id="mesh-gradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
                   <stop offset="0%" stopColor="#9678d1" stopOpacity="0.2" />
                   <stop offset="100%" stopColor="#889adc" stopOpacity="0.2" />
                 </linearGradient>
@@ -318,10 +330,15 @@ const DreamAnalysisApp = () => {
             style={{
               width: Math.random() * 100 + 50,
               height: Math.random() * 100 + 50,
-              background: `radial-gradient(circle, ${i % 2 === 0 ? '#b03e70' : '#871d78'}10, transparent 70%)`,
+              background: `radial-gradient(circle, ${
+                i % 2 === 0 ? "#b03e70" : "#871d78"
+              }10, transparent 70%)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              clipPath: i % 2 === 0 ? 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' : 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+              clipPath:
+                i % 2 === 0
+                  ? "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)"
+                  : "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)",
             }}
             animate={{
               x: [0, Math.random() * 150 - 75, 0],
