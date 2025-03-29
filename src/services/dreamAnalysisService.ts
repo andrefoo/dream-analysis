@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, Alert } from 'react-native';
 
 // Define global variables for backend availability
 const appState: {
@@ -17,7 +17,7 @@ interface Analysis {
   advice: string;
 }
 
-// Collection of dream symbols and meanings
+// Collection of dream symbols and meanings for fallback only
 const dreamSymbols: Record<string, string> = {
   "water": "Often connected to emotions and the unconscious mind. Clear water suggests emotional clarity.",
   "flying": "Represents a desire for freedom or escape from constraints in your waking life.",
@@ -31,7 +31,7 @@ const dreamSymbols: Record<string, string> = {
   "family": "Represents your relationship with your roots, heritage, and core emotional connections."
 };
 
-// Collection of advice based on dream topics
+// Collection of advice based on dream topics for fallback only
 const dreamAdvice: Record<string, string> = {
   "default": "Consider journaling about these dream themes to gain deeper insight into your subconscious patterns.",
   "peaceful": "Try to incorporate mindfulness meditation into your routine to maintain this sense of calm.",
@@ -42,8 +42,8 @@ const dreamAdvice: Record<string, string> = {
   "nostalgic": "Reflect on what these memories mean to you and how they might guide your present choices."
 };
 
-// Generate a customized mock analysis based on input
-function generateMockAnalysis(dream: string, mood: string): Analysis {
+// Generate a fallback analysis when the LLM backend is not available
+function generateFallbackAnalysis(dream: string, mood: string): Analysis {
   // Extract potential symbols
   const identifiedSymbols: SymbolismItem[] = [];
   
@@ -96,58 +96,29 @@ function generateMockAnalysis(dream: string, mood: string): Analysis {
 
 class DreamAnalysisService {
   // Base URL for the Flask backend
-  // For Android emulator use 10.0.2.2 instead of localhost
-  // For iOS simulator use localhost
-  // For physical devices, use your computer's IP address on the same network
-  // For web, use localhost
-  private static API_URL = Platform.OS === 'android' 
-    ? 'http://10.0.2.2:5000' 
-    : 'http://localhost:5000';
+  // Configure IP address directly for the most reliable connection
+  // Replace with your computer's actual local IP address
+  private static API_URL = "http://192.168.1.X:8000"; // REPLACE X with your IP's last digits
   
   static async analyzeDream(dream: string, mood: string = ''): Promise<Analysis> {
+    console.log(`Connecting to backend at: ${this.API_URL}`);
+    
+    // Extract some potential symbols from the dream text
+    const symbols = dream
+      .split(' ')
+      .filter(word => word.length > 5)
+      .slice(0, 3);
+    
+    // Map mood to intensity
+    const emotionalIntensity = 
+      mood === 'peaceful' ? 2 : 
+      mood === 'scary' ? 5 : 
+      mood === 'sad' ? 4 :
+      mood === 'exciting' ? 4 : 3;
+    
     try {
-      console.log(`Attempting to connect to ${this.API_URL}/api/analyze-dream`);
-      
-      // Extract some potential symbols from the dream text
-      const symbols = dream
-        .split(' ')
-        .filter(word => word.length > 5)
-        .slice(0, 3);
-      
-      // Map mood to intensity
-      const emotionalIntensity = 
-        mood === 'peaceful' ? 2 : 
-        mood === 'scary' ? 5 : 
-        mood === 'sad' ? 4 :
-        mood === 'exciting' ? 4 : 3;
-      
-      // Generate a customized mock analysis for this specific dream
-      const customMockAnalysis = generateMockAnalysis(dream, mood);
-      
-      // Check if we're in development mode with no backend available
-      if (__DEV__ && !appState.hasCheckedBackendAvailability) {
-        try {
-          console.log('Testing backend availability...');
-          // Try to reach the backend once per app session
-          const testResponse = await fetch(`${this.API_URL}/api/analyze-dream`, { 
-            method: 'HEAD'
-          });
-          appState.backendAvailable = testResponse.ok;
-          console.log(`Backend ${appState.backendAvailable ? 'is' : 'is not'} available`);
-        } catch (e) {
-          console.log('Backend not available, will use mock data:', e);
-          appState.backendAvailable = false;
-        }
-        appState.hasCheckedBackendAvailability = true;
-      }
-      
-      // Skip API call if backend is known to be unavailable
-      if (__DEV__ && appState.hasCheckedBackendAvailability && !appState.backendAvailable) {
-        console.log('Using mock data (backend unavailable)');
-        return customMockAnalysis;
-      }
-      
-      // Make a fetch call to the Flask backend
+      // Making a direct fetch call to the Flask backend with Python modules
+      console.log('Sending request to Python backend...');
       const response = await fetch(`${this.API_URL}/api/analyze-dream`, {
         method: 'POST',
         headers: {
@@ -166,18 +137,32 @@ class DreamAnalysisService {
         throw new Error(`Backend responded with status: ${response.status}`);
       }
 
+      // Get the analysis from the Python backend
       const data = await response.json();
+      console.log('Successfully received response from Python backend:', data);
+      
+      if (!data.success) {
+        throw new Error(data.error || "Unknown error from backend");
+      }
       
       // Transform the API response to our Analysis interface
       return {
-        symbolism: data.symbols || customMockAnalysis.symbolism,
-        emotional: data.analysis || customMockAnalysis.emotional,
-        advice: customMockAnalysis.advice, // API doesn't provide advice, use custom data
+        symbolism: data.symbols || [],
+        emotional: data.analysis || "Could not generate analysis",
+        advice: "Consider exploring these dream symbols further.",
       };
     } catch (error) {
-      console.error('Error analyzing dream - will use mock data:', error);
-      // Always fall back to custom mock data on error
-      return generateMockAnalysis(dream, mood);
+      console.error('Error connecting to Python backend:', error);
+      
+      // Show error alert
+      Alert.alert(
+        'Backend Connection Error',
+        'Could not connect to the Python backend. Make sure the server is running and check the server\'s IP address in the configuration.',
+        [{ text: 'OK' }]
+      );
+      
+      // Rethrow to let the UI handle it
+      throw error;
     }
   }
 }
