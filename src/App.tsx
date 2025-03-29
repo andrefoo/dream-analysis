@@ -1,3 +1,4 @@
+/*
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -729,3 +730,4 @@ const DreamAnalysisApp = () => {
 };
 
 export default DreamAnalysisApp;
+*/

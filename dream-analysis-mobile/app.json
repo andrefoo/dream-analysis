@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Dream Analysis",
+    "slug": "dream-analysis",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      }
+    },
+    "newArchEnabled": false
+  }
+} 
