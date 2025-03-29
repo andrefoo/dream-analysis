@@ -14,12 +14,21 @@ class DreamSchema(BaseModel):
     primaryEmotion: str = Field(description="The dominant feeling experienced during the dream")
     emotionalIntensity: int = Field(description="How strongly the emotion was felt (1-5 scale)")
     lifeConnection: str = Field(description="How the dream might relate to the user's waking life")
-    analysis: str = Field(default="", description="The LLM's interpretation of the dream's meaning")
-    imagePrompt: str = Field(default="", description="Description to generate a visual representation")
+    interpretation: str = Field(description="Overall interpretation of the dream's meaning")
+    symbols: List[Dict[str, str]] = Field(
+        default_factory=list, 
+        description="Analysis of key symbols in the dream, each with a title and explanation"
+    )
+    advice: str = Field(description="Actionable guidance based on the dream's emotional underpinnings")
+    imagePrompt: str = Field(description="Description to generate a visual representation")
 
 class DreamAnalysis(BaseModel):
     """Schema for the analysis output."""
-    analysis: str = Field(description="Insightful interpretation of the dream's meaning")
+    interpretation: str = Field(description="Overall interpretation of the dream's meaning")
+    symbols: List[Dict[str, str]] = Field(
+        description="Analysis of key symbols in the dream, each with a title and explanation"
+    )
+    advice: str = Field(description="Actionable guidance based on the dream's emotional underpinnings")
     imagePrompt: str = Field(description="Detailed visual description for image generation")
     explanation: str = Field(description="Explanation of how the analysis was derived")
 
@@ -59,7 +68,9 @@ class DreamAnalysisPipeline:
             "primaryEmotion": "",
             "emotionalIntensity": 0,
             "lifeConnection": "",
-            "analysis": "",
+            "interpretation": "",
+            "symbols": [],
+            "advice": "",
             "imagePrompt": ""
         }
         
@@ -94,7 +105,7 @@ class DreamAnalysisPipeline:
     
     def generate_analysis(self) -> DreamAnalysis:
         """
-        Step 3: Generate dream analysis based on collected information.
+        Generate dream analysis based on collected information.
         Returns the dream analysis.
         """
         if not self.dream_data:
@@ -104,13 +115,21 @@ class DreamAnalysisPipeline:
         prompt = format_analysis_prompt(self.dream_data)
         
         # Generate structured analysis using the LLM
-        analysis_data = self.llm_client.generate_structured_json(prompt, DreamAnalysis)
+        analysis_dict = self.llm_client.generate_structured_json(prompt, DreamAnalysis)
         
-        # Update the dream data with the analysis and image prompt
-        self.dream_data.analysis = analysis_data.get("analysis", "")
-        self.dream_data.imagePrompt = analysis_data.get("imagePrompt", "")
+        # Convert to a proper DreamAnalysis object if it's a dict
+        if isinstance(analysis_dict, dict):
+            analysis_data = DreamAnalysis(**analysis_dict)
+        else:
+            analysis_data = analysis_dict
         
-        return DreamAnalysis(**analysis_data)
+        # Update the dream data with the analysis results
+        self.dream_data.interpretation = analysis_data.interpretation
+        self.dream_data.symbols = analysis_data.symbols
+        self.dream_data.advice = analysis_data.advice
+        self.dream_data.imagePrompt = analysis_data.imagePrompt
+        
+        return analysis_data
     
     def generate_dream_image(self) -> str:
         """
@@ -177,7 +196,11 @@ class DreamAnalysisPipeline:
         # Step 3: Generate analysis
         analysis = self.generate_analysis()
         print("\n=== Dream Analysis ===")
-        print(analysis.analysis)
+        print(f"Interpretation: {analysis.interpretation}\n")
+        print("Symbols:")
+        for symbol in analysis.symbols:
+            print(f"  • {symbol.get('title', '')}: {symbol.get('explanation', '')}")
+        print(f"\nAdvice: {analysis.advice}")
         
         # Step 4: Generate image
         image_path = self.generate_dream_image()

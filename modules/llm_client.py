@@ -109,7 +109,7 @@ class LLMClient:
             return f"Error generating response: {str(e)}"
     
     def generate_structured_json(self, prompt: str, schema_model: BaseModel, 
-                                documents: Dict[str, str] = None) -> Dict[str, Any]:
+                                documents: Dict[str, str] = None) -> BaseModel:
         """
         Generate a structured JSON response from the LLM based on a Pydantic schema.
         
@@ -119,7 +119,7 @@ class LLMClient:
             documents: Dictionary of document names and their file paths or URLs
             
         Returns:
-            Dictionary containing the parsed JSON response
+            Pydantic model object containing the parsed JSON response
         """
         # Set to True to bypass document processing temporarily
         DISABLE_DOCUMENTS = False
@@ -149,7 +149,7 @@ class LLMClient:
             if 'explanation' in schema_model.model_fields and 'explanation' not in parsed_content:
                 parsed_content['explanation'] = "No explanation provided by the model."
                 
-            return parsed_content
+            return schema_model(**parsed_content)
         except Exception as e:
             print(f"Error generating structured JSON response: {e}")
             # Return empty dict with expected keys from the schema
@@ -175,7 +175,7 @@ class LLMClient:
                         default_values[field_name] = field.default_factory()
                     else:
                         default_values[field_name] = None
-            return default_values 
+            return schema_model(**default_values) 
             
     def generate_image(self, prompt: str, output_path: str = None) -> Union[str, bytes]:
         """

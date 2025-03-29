@@ -13,12 +13,21 @@ Primary emotion felt: {emotion}
 Emotional intensity (1-5): {intensity}
 Connection to waking life: {life_connection}
 
-Provide a thoughtful analysis of what this dream might mean, focusing on emotional insights and 
-potential symbolism. Consider the personal context shared by the dreamer and avoid generic 
-interpretations. Be insightful yet concise.
+Provide a structured analysis with the following components:
 
-Also create an abstract visual representation that captures the essence of this dream using color blobs. 
-The visual description should be vivid, specific, and incorporate the emotional tone of the dream.
+1. Interpretation: Give a thoughtful overall interpretation of what this dream might mean, focusing on emotional insights.
+
+2. Symbols: Analyze each of these key symbols from the dream:
+{symbol_list}
+For each symbol, provide:
+- A title for the symbol
+- An explanation of what the symbol might represent in the dreamer's psyche
+
+3. Advice: Offer actionable guidance based on the dream's emotional underpinnings. What steps might the dreamer take to address the underlying feelings or situations?
+
+4. Image Prompt: Create a vivid visual description that captures the essence of this dream using colors, shapes, and imagery. The visual description should incorporate the emotional tone of the dream.
+
+Consider the personal context shared by the dreamer and avoid generic interpretations. Be insightful yet concise.
 """
 
 # Prompt for generating the image from the dream
@@ -36,9 +45,13 @@ Style: Dreamlike, surreal, with rich symbolism
 # Function to format prompts with dream data
 def format_analysis_prompt(dream_data):
     """Format the analysis prompt with dream data."""
+    # Create a formatted list of symbols for individual analysis
+    symbol_list = "\n".join([f"- {symbol}" for symbol in dream_data.mainSymbols])
+    
     return DREAM_ANALYSIS_PROMPT.format(
         narrative=dream_data.narrative,
         symbols=", ".join(dream_data.mainSymbols),
+        symbol_list=symbol_list,
         emotion=dream_data.primaryEmotion,
         intensity=dream_data.emotionalIntensity,
         life_connection=dream_data.lifeConnection
