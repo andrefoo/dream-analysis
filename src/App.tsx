@@ -105,15 +105,25 @@ const DreamAnalysisApp = () => {
   const analyzeDream = async () => {
     setView("analysis");
     setIsTyping(true);
-    const response = await GeminiApi.query(dream);
-    sampleAnalysis.emotional = response;
-    const imageUrl = SupabaseService.getPublicUrl(
-      "dream-images",
-      "IMG_4689.HEIC" //placeholder
-    );
-    sampleAnalysis.imageUrl = imageUrl;
-    setAnalysis(sampleAnalysis);
-    setIsTyping(false);
+    try {
+      const response = await GeminiApi.query(dream);
+      sampleAnalysis.emotional = response;
+      const imageUrl = SupabaseService.getPublicUrl(
+        "dream-images",
+        "IMG_4689.HEIC" //placeholder
+      );
+      sampleAnalysis.imageUrl = imageUrl;
+      setAnalysis(sampleAnalysis);
+    } catch (error) {
+      console.error("Error analyzing dream:", error);
+      setAnalysis({
+        symbolism: [],
+        emotional: "We encountered an error while analyzing your dream. Please try again later.",
+        advice: "",
+      });
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   // Text animation effect for the analysis response
