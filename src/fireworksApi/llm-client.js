@@ -81,6 +81,7 @@ class LLMClient {
 
       try {
         parsedContent = JSON.parse(content);
+        console.log("Parsed content:", JSON.stringify(parsedContent, null, 2));
       } catch (e) {
         throw new Error("Failed to parse JSON response from LLM");
       }
@@ -90,7 +91,9 @@ class LLMClient {
         objectName && parsedContent[objectName]
           ? parsedContent[objectName]
           : parsedContent;
-
+      
+      console.log("Object to validate:", JSON.stringify(objectToValidate, null, 2));
+      
       // Validate with Zod schema
       const validatedData = schema.parse(objectToValidate);
 
