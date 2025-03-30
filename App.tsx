@@ -28,6 +28,10 @@ type RootStackParamList = {
     dreamText?: string;
     mood?: string;
   };
+  DetailedInput: { 
+    dream: string; 
+    mood: string; 
+  };
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
