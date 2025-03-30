@@ -1,9 +1,9 @@
-import { SupabaseClient, createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
 class SupabaseService {
   private static supabase = (() => {
     const supabaseUrl = "https://ekhktoyvoksdlmplgfzs.supabase.co";
-    const supabaseKey = process.env.REACT_APP_SUPABASE_KEY as string;
+    const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY as string;
     return createClient(supabaseUrl, supabaseKey);
   })();
 

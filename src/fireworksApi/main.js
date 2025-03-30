@@ -2,7 +2,7 @@ import DreamAnalysisPipeline from "./pipeline.js";
 
 // const program = new Command();
 // program
-//   .option('--model <model>', 'Specify the LLM model to use', 'accounts/fireworks/models/llama-v3p1-8b-instruct')
+//   .option('--model <model>', 'Specify the LLM model to use', 'accounts/fireworks/models/deepseek-v3-0324')
 //   .option('--temperature <temperature>', 'Set the temperature for generation (0.0-1.0)', 1.0)
 //   .option('--output <output>', 'Specify the output directory for results', './dream_results')
 //   .parse(process.argv);

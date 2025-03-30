@@ -1,40 +1,51 @@
-import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
-  Moon,
-  Send,
   BookOpen,
   Brain,
-  Heart,
-  Star,
-  Zap,
   ChevronLeft,
   ChevronRight,
+  Heart,
+  Moon,
+  Send,
+  Star,
+  Zap,
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import SupabaseService from "supabase";
 
 // Interface for the backend API
 interface DreamAnalysisAPI {
-  analyzeDream: (dreamText: string, mood: string) => Promise<{ analysis: string, symbols?: SymbolismItem[] }>;
+  analyzeDream: (
+    dreamText: string,
+    mood: string
+  ) => Promise<{ analysis: string; symbols?: SymbolismItem[] }>;
 }
 
 // API implementation that communicates with the Python backend
 const dreamAPI: DreamAnalysisAPI = {
-  analyzeDream: async (dreamText: string, mood: string): Promise<{ analysis: string, symbols?: SymbolismItem[] }> => {
+  analyzeDream: async (
+    dreamText: string,
+    mood: string
+  ): Promise<{ analysis: string; symbols?: SymbolismItem[] }> => {
     try {
       // Make a fetch call to the Python backend using the modules
-      console.log("GHi")
-      const response = await fetch('/api/analyze-dream', {
-        method: 'POST',
+      console.log("GHi");
+      const response = await fetch("/api/analyze-dream", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           narrative: dreamText,
-          mainSymbols: dreamText.split(' ').filter(word => word.length > 5).slice(0, 3), // Extract some keywords as symbols
+          mainSymbols: dreamText
+            .split(" ")
+            .filter((word) => word.length > 5)
+            .slice(0, 3), // Extract some keywords as symbols
           primaryEmotion: mood,
-          emotionalIntensity: mood === 'peaceful' ? 2 : mood === 'scary' ? 5 : 3, // Map mood to intensity
-          lifeConnection: "This connects to my current life situation."
+          emotionalIntensity:
+            mood === "peaceful" ? 2 : mood === "scary" ? 5 : 3, // Map mood to intensity
+          lifeConnection: "This connects to my current life situation.",
         }),
       });
 
@@ -43,18 +54,19 @@ const dreamAPI: DreamAnalysisAPI = {
       }
 
       const data = await response.json();
-      
+
       return {
         analysis: data.analysis,
-        symbols: data.symbols
+        symbols: data.symbols,
       };
     } catch (error) {
       console.error("Error analyzing dream:", error);
       return {
-        analysis: "Sorry, I couldn't analyze your dream at this time. The backend service might be unavailable."
+        analysis:
+          "Sorry, I couldn't analyze your dream at this time. The backend service might be unavailable.",
       };
     }
-  }
+  },
 };
 
 interface SymbolismItem {
@@ -143,15 +155,24 @@ const DreamAnalysisApp = () => {
 
   // Function to analyze dream
   const analyzeDream = async () => {
+    console.log("analyzing dream...");
     setView("analysis");
     setIsTyping(true);
-    const response = await dreamAPI.analyzeDream(dream, mood);
-    
+    console.log(
+      "supabase=",
+      SupabaseService.getPublicUrl("dream-images", "IMG_4689.HEIC")
+    );
+    // const response = await dreamAPI.analyzeDream(dream, mood);
+    const response = {
+      analysis: sampleAnalysis.emotional,
+      symbols: sampleAnalysis.symbolism,
+    };
+
     // Update the symbolism if available from the API
     if (response.symbols) {
       sampleAnalysis.symbolism = response.symbols;
     }
-    
+
     sampleAnalysis.emotional = response.analysis;
     setAnalysis(sampleAnalysis);
     setIsTyping(false);

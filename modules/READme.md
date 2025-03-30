@@ -62,7 +62,7 @@ Optional arguments:
 
 Example:
 ```
-python -m modules.main --model accounts/fireworks/models/llama-v3p3-70b-instruct --temperature 0.7 --output my_dreams
+python -m modules.main --model accounts/fireworks/models/deepseek-v3-0324 --temperature 0.7 --output my_dreams
 ```
 
 #### 2. Using the pipeline directly:
@@ -74,7 +74,7 @@ from modules.pipeline import DreamAnalysisPipeline
 from modules.llm_client import LLMClient
 
 # Initialize the client and pipeline
-client = LLMClient(model="accounts/fireworks/models/llama-v3p3-70b-instruct")
+client = LLMClient(model="accounts/fireworks/models/deepseek-v3-0324")
 pipeline = DreamAnalysisPipeline(llm_client=client)
 
 # Run the pipeline

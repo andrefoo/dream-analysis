@@ -1,4 +1,5 @@
-const axios = require("axios");
+import axios from "axios";
+import fireWorksAnalyzeDream from "fireworksApi/main";
 
 // Define global variables for backend availability
 const appState: {
@@ -130,47 +131,68 @@ class DreamAnalysisService {
     mood: string = ""
   ): Promise<Analysis> {
     try {
-      console.log(`Checking backend health at 10.25.13.188:8000/api/health`);
+      //       console.log(`Checking backend health at 10.25.13.188:8000/api/health`);
 
-      // Perform health check
-      try {
-        const healthResponse = await fetch(`http://127.0.0.1:8000/api/health`);
-      } catch (error) {
-        console.error("Backend health check failed:", error);
-        appState.backendAvailable = false;
-        appState.hasCheckedBackendAvailability = true;
-        throw new Error("Backend is not available.");
-      }
-      console.log("Backend health check passed.");
+      //       // Perform health check
+      //       try {
+      //         let config = {
+      //           method: 'post',
+      //           maxBodyLength: Infinity,
+      //           url: 'https://api.fireworks.ai/inference/v1/chat/completions',
+      //           headers: { },
+      //           data : ''
+      //         };
 
-      console.log("Backend is healthy. Proceeding with dream analysis...");
+      //         const test = await axios.request(config);
+      //         // console.log("test=", test);
+      // console.log("haeha")
+      //         // const healthResponse = await fetch(`http://127.0.0.1:8000/api/health`);
+      //       } catch (error) {
+      //         console.error("Backend health check failed:", error);
+      //         appState.backendAvailable = false;
+      //         appState.hasCheckedBackendAvailability = true;
+      //         throw new Error("Backend is not available.");
+      //       }
+      //       console.log("Backend health check passed.");
 
-      // Prepare the configuration for the dream analysis request
-      const config = {
-        method: "post",
-        maxBodyLength: Infinity,
-        url: `10.25.13.188:8000/api/analyze-dream`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: JSON.stringify({
-          narrative: dream,
-          primaryEmotion: mood,
-          mainSymbols: dream
-            .split(" ")
-            .filter((word) => word.length > 5)
-            .slice(0, 3),
-        }),
+      //       console.log("Backend is healthy. Proceeding with dream analysis...");
+
+      //       // Prepare the configuration for the dream analysis request
+      //       const config = {
+      //         method: "post",
+      //         maxBodyLength: Infinity,
+      //         url: `10.25.13.188:8000/api/analyze-dream`,
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //         },
+      //         data: JSON.stringify({
+      //           narrative: dream,
+      //           primaryEmotion: mood,
+      //           mainSymbols: dream
+      //             .split(" ")
+      //             .filter((word) => word.length > 5)
+      //             .slice(0, 3),
+      //         }),
+      //       };
+
+      //       // Make the API call to analyze the dream
+      //       const response = await axios.request(config);
+
+      //       if (!response || !response.data) {
+      //         throw new Error(`Backend responded with invalid data: ${response}`);
+      //       }
+
+      //       const data = response.data;
+      const test = await fireWorksAnalyzeDream();
+      console.log("test");
+      const data = {
+        symbols: [
+          { symbol: "Water", meaning: "Emotional state or subconscious mind" },
+          { symbol: "Flying", meaning: "Freedom and escape from limitations" },
+        ],
+        analysis: `Your dream reflects a ${mood} emotional state.`,
+        advice: "Consider journaling your feelings to gain clarity.",
       };
-
-      // Make the API call to analyze the dream
-      const response = await axios.request(config);
-
-      if (!response || !response.data) {
-        throw new Error(`Backend responded with invalid data: ${response}`);
-      }
-
-      const data = response.data;
 
       // Transform the API response to our Analysis interface
       return {
