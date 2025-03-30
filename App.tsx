@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Dimensions, Platform, StatusBar, ActivityIndicator, FlatList } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Dimensions, Platform, StatusBar, ActivityIndicator, FlatList, ImageBackground } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Brain, Heart, Star, Zap, Moon, Send, ArrowRight, ChevronLeft, ChevronRight, Album, Plus, BarChart, Trash2, Clock, Lightbulb, BookOpen, Calendar } from 'lucide-react-native';
+import { Brain, Heart, Star, Zap, Moon, Send, ArrowRight, ChevronLeft, ChevronRight, Album, Plus, BarChart, Trash2, Clock, Lightbulb, BookOpen, Calendar, Sparkles } from 'lucide-react-native';
 import DreamAnalysisService from './src/services/dreamAnalysisService';
 import SupabaseService, { DreamData, SavedDream } from './src/services/supabaseService';
 import Slider from '@react-native-community/slider';
+import GradientBackground from './src/components/GradientBackground';
+import GlassCard from './src/components/GlassCard';
+import Button from './src/components/Button';
+import theme from './src/theme';
 
 interface SymbolismItem {
   symbol: string;
@@ -46,9 +50,10 @@ interface AnalysisScreenParams {
 
 const IntroScreen = ({ navigation }: { navigation: NavigationProp }) => {
   const [currentFeature, setCurrentFeature] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const features = [
     {
-      icon: <Brain size={32} color="#f6547b" />,
+      icon: <Brain size={32} color="#3269ad" />,
       title: "AI-Powered Analysis",
       description:
         "Advanced algorithms analyze your dream patterns and symbolism",
@@ -65,33 +70,76 @@ const IntroScreen = ({ navigation }: { navigation: NavigationProp }) => {
       description: "Track and analyze your dreams over time",
     },
     {
-      icon: <Zap size={32} color="#3269ad" />,
+      icon: <Zap size={32} color="#f6547b" />,
       title: "Quick Analysis",
       description: "Get instant insights into your dreams",
     },
   ];
 
-  return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.featureContainer}>
-          {features[currentFeature].icon}
-          <Text style={styles.featureTitle}>
-            {features[currentFeature].title}
-          </Text>
-          <Text style={styles.featureDescription}>
-            {features[currentFeature].description}
-          </Text>
+  // Auto switch features
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentFeature((prev) => (prev + 1) % features.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Try to load background image, use gradient as fallback
+  let backgroundContent: JSX.Element;
+  try {
+    // Replace this with your actual image path once you have the image
+    const backgroundImage = require('./src/assets/images/dream_background.png');
+    backgroundContent = (
+      <ImageBackground 
+        source={backgroundImage}
+        style={styles.backgroundImage}
+        onLoad={() => setImageLoaded(true)}
+        onError={() => setImageLoaded(false)}
+        resizeMode="cover"
+      >
+        {renderContent()}
+      </ImageBackground>
+    );
+  } catch (error) {
+    // Fallback to gradient if image fails to load
+    backgroundContent = (
+      <GradientBackground 
+        colors={['#FFFFFF', '#F8F8FF']}
+        style={styles.backgroundImage}
+      >
+        {renderContent()}
+      </GradientBackground>
+    );
+  }
+
+  // Extracted the content to avoid duplication
+  function renderContent() {
+    return (
+      <ScrollView 
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: Platform.OS === 'ios' ? 50 : 20 }
+        ]}
+      >
+        <View style={styles.appTitleContainer}>
+          <Moon size={36} color="#000000" />
+          <Text style={styles.appTitle}>Morpheus</Text>
         </View>
-        <TouchableOpacity
-          style={styles.button}
+        
+        
+        <Button
+          title="Get Started" 
           onPress={() => navigation.navigate("Input")}
-        >
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
+          size="lg"
+          icon={<ArrowRight size={18} color="#FFFFFF" style={{marginLeft: 8}} />}
+          iconPosition="right"
+          style={styles.startButton}
+        />
       </ScrollView>
-    </View>
-  );
+    );
+  }
+
+  return backgroundContent;
 };
 
 const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
@@ -648,18 +696,18 @@ export default function App() {
     Platform.OS === "android" ? StatusBar.currentHeight || 0 : 44;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f6f2ef', paddingTop: statusBarHeight }}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f6f2ef" />
+    <View style={{ flex: 1, backgroundColor: theme.colors.background, paddingTop: statusBarHeight }}>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.background} />
       <NavigationContainer
         theme={{
           dark: false,
           colors: {
-            primary: '#3269ad',
-            background: '#f6f2ef',
-            card: '#f6f2ef',
-            text: '#000010',
-            border: '#00001020',
-            notification: '#f6547b',
+            primary: theme.colors.primary,
+            background: theme.colors.background,
+            card: theme.colors.card,
+            text: theme.colors.text.primary,
+            border: 'rgba(0, 0, 16, 0.1)',
+            notification: theme.colors.secondary,
           },
         }}
       >
@@ -667,16 +715,16 @@ export default function App() {
           initialRouteName="Intro"
           screenOptions={{
             headerStyle: {
-              backgroundColor: '#f6f2ef',
+              backgroundColor: theme.colors.background,
             },
-            headerTintColor: '#000010',
+            headerTintColor: theme.colors.text.primary,
             headerTitleStyle: {
               fontWeight: "bold",
               fontSize: 18,
             },
             headerBackTitle: "Back",
             contentStyle: {
-              backgroundColor: '#f6f2ef',
+              backgroundColor: theme.colors.background,
             },
             animation: "slide_from_right",
             headerShown: true,
@@ -693,7 +741,7 @@ export default function App() {
             options={{
               headerShown: false,
               contentStyle: {
-                backgroundColor: '#f6f2ef',
+                backgroundColor: theme.colors.background,
               },
             }}
           />
@@ -703,7 +751,7 @@ export default function App() {
             options={{
               title: "Record Your Dream",
               contentStyle: {
-                backgroundColor: '#f6f2ef',
+                backgroundColor: theme.colors.background,
               },
             }}
           />
@@ -713,7 +761,7 @@ export default function App() {
             options={{ 
               title: 'Dream Details',
               contentStyle: {
-                backgroundColor: '#f6f2ef',
+                backgroundColor: theme.colors.background,
               },
             }}
           />
@@ -723,7 +771,7 @@ export default function App() {
             options={{
               title: "Analysis Results",
               contentStyle: {
-                backgroundColor: '#f6f2ef',
+                backgroundColor: theme.colors.background,
               },
             }}
           />
@@ -733,7 +781,7 @@ export default function App() {
             options={{ 
               title: 'Dream Journal',
               contentStyle: {
-                backgroundColor: '#f6f2ef',
+                backgroundColor: theme.colors.background,
               },
             }}
           />
@@ -743,11 +791,11 @@ export default function App() {
             options={{ 
               title: 'Observatory',
               contentStyle: {
-                backgroundColor: '#f6f2ef',
+                backgroundColor: theme.colors.background,
               },
             }}
           />
-          </Stack.Navigator>
+        </Stack.Navigator>
         
         {/* Bottom Navigation Bar */}
         <NavigationBarWithState />
@@ -761,99 +809,179 @@ const NavigationBarWithState = () => {
   const navigation = useNavigation<NavigationProp>();
   
   return (
-    <View style={{
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      backgroundColor: 'rgba(246, 242, 239, 0.9)',
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      borderTopWidth: 1,
-      borderTopColor: '#00001020',
-      elevation: 8,
-    }}>
-      <TouchableOpacity 
-        style={styles.navButton}
-        onPress={() => navigation.navigate('Gallery')}
-      >
-        <Album size={24} color="#3269ad" />
-        <Text style={[styles.navButtonText, { color: '#000010' }]}>Gallery</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.navButton}
-        onPress={() => navigation.navigate('Input')}
-      >
-        <View style={{
-          position: 'relative',
-          width: 24,
-          height: 24,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-          <Plus size={24} color="#f6547b" />
-        </View>
-        <Text style={[styles.navButtonText, { color: '#f6547b' }]}>Add Dream</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.navButton}
-        onPress={() => navigation.navigate('Dashboard')}
-      >
-        <BarChart size={24} color="#c159aa" />
-        <Text style={[styles.navButtonText, { color: '#000010' }]}>Observatory</Text>
-      </TouchableOpacity>
-    </View>
+    <GlassCard 
+      style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        borderRadius: 0,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+      }}
+      intensity={30}
+    >
+      <View style={{
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+      }}>
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Gallery')}
+        >
+          <Album size={24} color={theme.colors.primary} />
+          <Text style={[styles.navButtonText, { color: theme.colors.text.primary }]}>Gallery</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Input')}
+        >
+          <View style={{
+            position: 'relative',
+            width: 48,
+            height: 48,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: theme.colors.secondary,
+            borderRadius: 24,
+            ...theme.shadows.md,
+          }}>
+            <Plus size={24} color="#FFFFFF" />
+          </View>
+          <Text style={[styles.navButtonText, { color: theme.colors.secondary, marginTop: 4 }]}>Add Dream</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Dashboard')}
+        >
+          <BarChart size={24} color={theme.colors.primaryDark} />
+          <Text style={[styles.navButtonText, { color: theme.colors.text.primary }]}>Observatory</Text>
+        </TouchableOpacity>
+      </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f2ef',
+    backgroundColor: theme.colors.background,
     paddingBottom: Platform.OS === 'ios' ? 34 : 0, // Safe area bottom padding for iOS
   },
   scrollContent: {
     padding: 20,
     alignItems: "center",
-    paddingBottom: Platform.OS === "ios" ? 50 : 20, // Extra padding at bottom for iOS
+    paddingBottom: Platform.OS === "ios" ? 90 : 60, // Extra padding at bottom for iOS and the nav bar
   },
-  featureContainer: {
-    alignItems: "center",
+  appTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    ...theme.shadows.md,
+  },
+  appTitle: {
+    fontSize: theme.fontSize.xxl,
+    fontWeight: 'bold',
+    marginLeft: 12,
+    color: theme.colors.text.primary,
+  },
+  featureCard: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 30,
+    minHeight: 220,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderWidth: 1,
+    ...theme.shadows.md,
+  },
+  featureIconContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    marginTop: 10,
+    ...theme.shadows.sm,
   },
   featureTitle: {
-    fontSize: 24,
+    fontSize: theme.fontSize.xl,
     fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 10,
-    color: '#000010',
+    marginBottom: 14,
+    color: theme.colors.text.primary,
+    textAlign: 'center',
   },
   featureDescription: {
-    fontSize: 16,
+    fontSize: theme.fontSize.md,
     textAlign: 'center',
-    color: '#00001080',
+    color: theme.colors.text.secondary,
+    maxWidth: '90%',
+    lineHeight: 22,
+  },
+  dotContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 40,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: theme.colors.primary,
+    width: 24,
+    borderRadius: 4,
+    ...theme.shadows.sm,
+  },
+  startButton: {
+    minWidth: 220,
+    backgroundColor: theme.colors.primary,
+    ...theme.shadows.md,
+  },
+  secondaryButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+    width: '100%',
+    gap: 12,
+  },
+  secondaryButton: {
+    flex: 1,
+    maxWidth: '48%',
   },
   button: {
-    backgroundColor: '#3269ad',
+    backgroundColor: theme.colors.primary,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: theme.radius.md,
     marginTop: 20,
+    ...theme.shadows.sm,
   },
   buttonDisabled: {
-    backgroundColor: '#00001050',
+    backgroundColor: 'rgba(0, 0, 16, 0.3)',
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: theme.fontSize.md,
     fontWeight: "600",
+    textAlign: 'center',
   },
   label: {
-    fontSize: 16,
+    fontSize: theme.fontSize.md,
     fontWeight: "600",
     marginBottom: 8,
     alignSelf: 'flex-start',
@@ -862,14 +990,14 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     borderWidth: 1,
-    borderColor: '#00001020',
-    borderRadius: 8,
+    borderColor: 'rgba(0, 0, 16, 0.2)',
+    borderRadius: theme.radius.md,
     padding: 12,
     marginBottom: 20,
     minHeight: 100,
     color: '#000010',
-    backgroundColor: '#ffffff20',
-    fontSize: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    fontSize: theme.fontSize.md,
     lineHeight: 24,
   },
   analysisTitle: {
@@ -916,9 +1044,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   navButtonText: {
-    color: '#000010',
-    fontSize: 12,
+    fontSize: theme.fontSize.xs,
     marginTop: 5,
+    fontWeight: '500',
   },
   galleryTitle: {
     fontSize: 28,
@@ -1184,5 +1312,10 @@ const styles = StyleSheet.create({
   sliderLabel: {
     fontSize: 12,
     color: '#00001080',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
 });

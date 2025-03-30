@@ -156,11 +156,11 @@ class DreamAnalysisService {
       console.log("test", test);
       const data = {
         symbols: [
-          { symbol: "Water", meaning: "Emotional state or subconscious mind" },
-          { symbol: "Flying", meaning: "Freedom and escape from limitations" },
+          { symbol: "Farting", meaning: "Farting in this context can symbolize a loss of control and the fear of embarrassing oneself in a public setting. It may also represent repressed emotions or thoughts that are finding a way to surface, even if in an unintended or socially awkward manner." },
+          // { symbol: "School", meaning: "A social place" },
         ],
-        analysis: `Your dream reflects a ${mood} emotional state.`,
-        advice: "Consider journaling your feelings to gain clarity.",
+        analysis: `This dream suggests a profound sense of social discomfort and the fear of embarrassment, despite the lack of explicitly felt emotion. It reflects underlying tensions or anxieties about how you present yourself in public, particularly in environments like school where social norms and peer judgments are highly prevalent. The act of farting, which is typically considered inappropriate, can symbolize a loss of control and the fear of being judged or ostracized for actions that are beyond your control.`,
+        advice: "Consider exploring your feelings about social situations and how you manage your sense of self in public. It might be helpful to discuss any underlying anxieties with a trusted friend or therapist. Practicing mindfulness and self-compassion can also aid in managing these feelings and reducing the fear of social judgment.",
       };
 
       // Transform the API response to our Analysis interface
