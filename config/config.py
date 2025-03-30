@@ -11,7 +11,7 @@ class Config:
     FIREWORKS_API_KEY = os.environ.get("FIREWORKS_API_KEY", "")
     
     # Default model ID
-    DEFAULT_MODEL = "accounts/fireworks/models/llama-v3p3-70b-instruct"
+    DEFAULT_MODEL = "accounts/fireworks/models/qwen2p5-72b-instruct"
     
     # Temperature for LLM generation (0.0-1.0)
     DEFAULT_TEMPERATURE = 0.6

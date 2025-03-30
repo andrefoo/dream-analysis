@@ -9,11 +9,11 @@ const DreamAnalysisSchema = z.object({
   symbols: z.array(
     z.object({
       title: z.string(),
-      explanation: z.string()
+      explanation: z.string(),
     })
   ),
   advice: z.string(),
-  imagePrompt: z.string()
+  imagePrompt: z.string(),
 });
 
 class DreamAnalysisPipeline {
@@ -46,30 +46,25 @@ class DreamAnalysisPipeline {
 
     const prompt = formatAnalysisPrompt(this.dreamData);
     console.log("Prompt = ", prompt);
-    
+
     // Create messages array for structured response
-    const messages = [
-      { role: "system", content: prompt }
-    ];
-    
+    const messages = [{ role: "system", content: prompt }];
+
     // Use generateStructuredResponse instead of generateText
     const completion = await this.llmClient.generateStructuredResponse(
       DreamAnalysisSchema,
       messages
     );
-    
-    console.log("Analysis data = ", completion);
-    
+
     // Extract the validated data from the parsed response
     const analysisData = completion.choices[0].message.parsed;
-    
+
     // Update dreamData with the analysis information
     this.dreamData.analysis = analysisData.interpretation;
     this.dreamData.symbols = analysisData.symbols;
     this.dreamData.advice = analysisData.advice;
     this.dreamData.imagePrompt = analysisData.imagePrompt;
 
-    console.log("Dream data = ", this.dreamData);
     return this.dreamData;
   }
 
@@ -82,9 +77,12 @@ class DreamAnalysisPipeline {
 
     const formattedImagePrompt = formatImagePrompt(this.dreamData);
     const imagePath = `./dream_results/dream_image_${Date.now()}.png`;
-    await this.llmClient.generateImage(formattedImagePrompt, imagePath);
-    console.log(`Dream image generated successfully at: ${imagePath}`);
-    return imagePath;
+    const test = await this.llmClient.generateImage(
+      formattedImagePrompt,
+      imagePath
+    );
+    console.log("testImage = ", test);
+    return test;
   }
 
   saveDreamData(filePath) {
@@ -92,23 +90,29 @@ class DreamAnalysisPipeline {
       throw new Error("No dream data available.");
     }
 
-    FileSystem.writeAsStringAsync(
-      filePath,
-      JSON.stringify(this.dreamData, null, 2)
+    const fullFilePath = FileSystem.documentDirectory + filePath;
+    FileSystem.makeDirectoryAsync(
+      FileSystem.documentDirectory + "dream_results",
+      { intermediates: true }
     )
-      .then(() => console.log(`Dream data saved to ${filePath}`))
+      .then(() => {
+        return FileSystem.writeAsStringAsync(
+          fullFilePath,
+          JSON.stringify(this.dreamData, null, 2)
+        );
+      })
+      .then(() => console.log(`Dream data saved to ${fullFilePath}`))
       .catch((error) => console.error("Error saving dream data:", error));
-    console.log(`Dream data saved to ${filePath}`);
   }
 
   async runPipeline(dream, mood) {
     this.collectDreamInformation(dream, mood);
 
     await this.generateAnalysis();
-    // const imagePath = await this.generateDreamImage();
+    const image = await this.generateDreamImage();
+    console.log("Image generated: ", image);
 
-    // this.saveDreamData("./dream_results/dream_analysis.json");
-    console.log("Dream data = ", this.dreamData);
+    this.saveDreamData("./dream_results/dream_analysis.json");
     return this.dreamData;
   }
 }

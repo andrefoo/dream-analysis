@@ -19,7 +19,7 @@ class LLMClient:
     
     def __init__(self, 
                  api_key: Optional[str] = None,
-                 model: str = "accounts/fireworks/models/llama-v3p3-70b-instruct",
+                 model: str = "accounts/fireworks/models/qwen2p5-72b-instruct",
                  max_tokens: int = 4096,
                  temperature: float = 0.6):
         """

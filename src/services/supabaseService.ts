@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
-import { Platform } from 'react-native';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env';
+import { createClient } from "@supabase/supabase-js";
+import { Platform } from "react-native";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./env";
 
 export interface DreamData {
   dream_text: string;
@@ -33,21 +33,22 @@ class SupabaseService {
       auth: {
         persistSession: true,
         // Storage is handled differently on React Native
-        storage: Platform.OS === 'web'
-          ? localStorage 
-          : {
-              getItem: async (key: string) => {
-                try {
-                  // You can implement AsyncStorage here if needed
-                  return null;
-                } catch (e) {
-                  return null;
-                }
+        storage:
+          Platform.OS === "web"
+            ? localStorage
+            : {
+                getItem: async (key: string) => {
+                  try {
+                    // You can implement AsyncStorage here if needed
+                    return null;
+                  } catch (e) {
+                    return null;
+                  }
+                },
+                setItem: async (key: string, value: string) => {},
+                removeItem: async (key: string) => {},
               },
-              setItem: async (key: string, value: string) => {},
-              removeItem: async (key: string) => {},
-            },
-      }
+      },
     });
   }
 
@@ -55,40 +56,40 @@ class SupabaseService {
   async saveDream(dreamData: DreamData): Promise<SavedDream | null> {
     try {
       const { data, error } = await this.supabase
-        .from('dreams')
+        .from("dreams")
         .insert([dreamData])
         .select()
         .single();
 
       if (error) {
-        console.error('Error saving dream to Supabase:', error);
+        console.error("Error saving dream to Supabase:", error);
         return null;
       }
 
       return data as SavedDream;
     } catch (error) {
-      console.error('Exception saving dream to Supabase:', error);
+      console.error("Exception saving dream to Supabase:", error);
       return null;
     }
   }
 
   // Get all dreams for a user
-  async getDreams(userId = 'anonymous'): Promise<SavedDream[]> {
+  async getDreams(userId = "anonymous"): Promise<SavedDream[]> {
     try {
       const { data, error } = await this.supabase
-        .from('dreams')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+        .from("dreams")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('Error fetching dreams from Supabase:', error);
+        console.error("Error fetching dreams from Supabase:", error);
         return [];
       }
 
       return data as SavedDream[];
     } catch (error) {
-      console.error('Exception fetching dreams from Supabase:', error);
+      console.error("Exception fetching dreams from Supabase:", error);
       return [];
     }
   }
@@ -97,22 +98,45 @@ class SupabaseService {
   async deleteDream(dreamId: string): Promise<boolean> {
     try {
       const { error } = await this.supabase
-        .from('dreams')
+        .from("dreams")
         .delete()
-        .eq('id', dreamId);
+        .eq("id", dreamId);
 
       if (error) {
-        console.error('Error deleting dream from Supabase:', error);
+        console.error("Error deleting dream from Supabase:", error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Exception deleting dream from Supabase:', error);
+      console.error("Exception deleting dream from Supabase:", error);
       return false;
+    }
+  }
+
+  async uploadBase64Image(
+    base64Image: string,
+    bucketName: string,
+    fileName: string
+  ): Promise<void> {
+    // Convert Base64 string to Buffer
+    const buffer = Buffer.from(base64Image, "base64");
+
+    const { data, error } = await this.supabase.storage
+      .from(bucketName)
+      .upload(fileName, buffer, {
+        contentType: "image/png", // Set the appropriate content type
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Error uploading image:", error);
+    } else {
+      console.log("Image uploaded successfully:", data);
     }
   }
 }
 
 // Export a singleton instance
-export default new SupabaseService(); 
+export default new SupabaseService();

@@ -26,6 +26,20 @@ Your response should be in JSON format with the following structure:
   "advice": "Practical advice for the dreamer based on the interpretation",
   "imagePrompt": "Detailed visual description for generating an image"
 }
+
+Do not include any additional text or commentary outside of the JSON structure, nor include things like "\`\`\`JSON".
+Example response:
+{
+  "interpretation": "This dream suggests...",
+  "symbols": [
+    {
+      "title": "Water",
+      "explanation": "Represents emotions and the subconscious"
+    }
+  ],
+  "advice": "Consider exploring your feelings about...",
+  "imagePrompt": "A surreal landscape with flowing water, vibrant colors..."
+}
 `;
 
 const IMAGE_GENERATION_PROMPT = `
