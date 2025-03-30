@@ -13,9 +13,7 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -39,4 +37,4 @@
       "config": "metro.config.js"
     }
   }
-} 
+}

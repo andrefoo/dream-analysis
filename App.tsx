@@ -46,12 +46,14 @@ const IntroScreen = ({ navigation }: { navigation: NavigationProp }) => {
     {
       icon: <Brain size={32} color="#f6547b" />,
       title: "AI-Powered Analysis",
-      description: "Advanced algorithms analyze your dream patterns and symbolism",
+      description:
+        "Advanced algorithms analyze your dream patterns and symbolism",
     },
     {
       icon: <Heart size={32} color="#c159aa" />,
       title: "Personalized Insights",
-      description: "Get tailored interpretations based on your unique experiences",
+      description:
+        "Get tailored interpretations based on your unique experiences",
     },
     {
       icon: <Star size={32} color="#efc560" />,
@@ -70,12 +72,16 @@ const IntroScreen = ({ navigation }: { navigation: NavigationProp }) => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.featureContainer}>
           {features[currentFeature].icon}
-          <Text style={styles.featureTitle}>{features[currentFeature].title}</Text>
-          <Text style={styles.featureDescription}>{features[currentFeature].description}</Text>
+          <Text style={styles.featureTitle}>
+            {features[currentFeature].title}
+          </Text>
+          <Text style={styles.featureDescription}>
+            {features[currentFeature].description}
+          </Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Input')}
+          onPress={() => navigation.navigate("Input")}
         >
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
@@ -85,8 +91,8 @@ const IntroScreen = ({ navigation }: { navigation: NavigationProp }) => {
 };
 
 const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
-  const [dream, setDream] = useState('');
-  const [mood, setMood] = useState('');
+  const [dream, setDream] = useState("");
+  const [mood, setMood] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -116,7 +122,7 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
         mood: mood
       });
     } catch (error) {
-      console.error('Error analyzing dream:', error);
+      console.error("Error analyzing dream:", error);
       setError('Failed to analyze dream. Please try again.');
     } finally {
       setIsLoading(false);
@@ -629,7 +635,8 @@ const DashboardScreen = () => {
 
 export default function App() {
   // Use StatusBar.currentHeight for Android, use 44 for iOS
-  const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 44;
+  const statusBarHeight =
+    Platform.OS === "android" ? StatusBar.currentHeight || 0 : 44;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f6f2ef', paddingTop: statusBarHeight }}>
@@ -648,6 +655,7 @@ export default function App() {
         }}
       >
         <Stack.Navigator
+        <Stack.Navigator
           initialRouteName="Intro"
           screenOptions={{
             headerStyle: {
@@ -655,37 +663,37 @@ export default function App() {
             },
             headerTintColor: '#000010',
             headerTitleStyle: {
-              fontWeight: 'bold',
+              fontWeight: "bold",
               fontSize: 18,
             },
-            headerBackTitle: 'Back',
+            headerBackTitle: "Back",
             contentStyle: {
               backgroundColor: '#f6f2ef',
             },
-            animation: 'slide_from_right',
+            animation: "slide_from_right",
             headerShown: true,
             headerShadowVisible: false,
             headerBackVisible: true,
             headerBackTitleVisible: false,
-            headerTitleAlign: 'center',
-            headerTitle: '',
+            headerTitleAlign: "center",
+            headerTitle: "",
           }}
         >
-          <Stack.Screen 
-            name="Intro" 
-            component={IntroScreen} 
-            options={{ 
+          <Stack.Screen
+            name="Intro"
+            component={IntroScreen}
+            options={{
               headerShown: false,
               contentStyle: {
                 backgroundColor: '#f6f2ef',
               },
             }}
           />
-          <Stack.Screen 
-            name="Input" 
+          <Stack.Screen
+            name="Input"
             component={InputScreen}
-            options={{ 
-              title: 'Record Your Dream',
+            options={{
+              title: "Record Your Dream",
               contentStyle: {
                 backgroundColor: '#f6f2ef',
               },
@@ -701,11 +709,11 @@ export default function App() {
               },
             }}
           />
-          <Stack.Screen 
-            name="Analysis" 
+          <Stack.Screen
+            name="Analysis"
             component={AnalysisScreen as React.ComponentType<any>}
-            options={{ 
-              title: 'Analysis Results',
+            options={{
+              title: "Analysis Results",
               contentStyle: {
                 backgroundColor: '#f6f2ef',
               },
@@ -802,16 +810,16 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    alignItems: 'center',
-    paddingBottom: Platform.OS === 'ios' ? 50 : 20, // Extra padding at bottom for iOS
+    alignItems: "center",
+    paddingBottom: Platform.OS === "ios" ? 50 : 20, // Extra padding at bottom for iOS
   },
   featureContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 40,
   },
   featureTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
     color: '#000010',
@@ -832,19 +840,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#00001050',
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   label: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
     alignSelf: 'flex-start',
     color: '#000010',
   },
   input: {
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
     borderColor: '#00001020',
     borderRadius: 8,
@@ -858,17 +866,17 @@ const styles = StyleSheet.create({
   },
   analysisTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
     color: '#000010',
   },
   analysisSection: {
-    width: '100%',
+    width: "100%",
     marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 10,
     color: '#000010',
   },
@@ -885,7 +893,7 @@ const styles = StyleSheet.create({
   },
   symbol: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 5,
     color: '#000010',
   },
@@ -1169,4 +1177,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#00001080',
   },
-}); 
+});

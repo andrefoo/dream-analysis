@@ -15,7 +15,7 @@ from modules.pipeline import DreamAnalysisPipeline, DreamSchema, DreamAnalysis
 from modules.prompts import format_analysis_prompt, format_image_prompt
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type"])  # Enable CORS for all routes and origins
 
 # Initialize LLM client
 llm_client = LLMClient()
@@ -28,7 +28,7 @@ def check_api():
     """Endpoint to check if the API is available"""
     return "", 200
 
-@app.route('/api/analyze-dream', methods=['POST'])
+@app.route('/api/analyze-dream', methods=['POST', 'GET'])
 def analyze_dream():
     """Analyze a dream using the LLM pipeline"""
     # Get request data
@@ -84,6 +84,13 @@ def analyze_dream():
             'error': str(e),
             'analysis': "Your dream suggests changes in your life that require careful consideration. The symbols point to a need for introspection during this time of transition."
         }), 500
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'success': True,
+        'message': "Backend is running and reachable."
+    })
 
 if __name__ == '__main__':
     try:
