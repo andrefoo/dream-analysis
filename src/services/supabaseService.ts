@@ -115,17 +115,14 @@ class SupabaseService {
   }
 
   async uploadBase64Image(
-    base64Image: string,
+    base64Image: string, // Full data URL (e.g., "data:image/png;base64,...")
     bucketName: string,
     fileName: string
-  ): Promise<void> {
-    // Convert Base64 string to Buffer
-    const buffer = Buffer.from(base64Image, "base64");
-
+  ) {
     const { data, error } = await this.supabase.storage
       .from(bucketName)
-      .upload(fileName, buffer, {
-        contentType: "image/png", // Set the appropriate content type
+      .upload(fileName, base64Image, {
+        contentType: "image/png", // Ensure correct type
         cacheControl: "3600",
         upsert: false,
       });

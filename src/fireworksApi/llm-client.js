@@ -1,6 +1,7 @@
-import { Buffer } from "buffer";
+// Removed unused Buffer import
 import * as FileSystem from "expo-file-system";
 import fetch from "node-fetch";
+import supabaseService from "../services/supabaseService"; // Adjusted import path if necessary
 
 class LLMClient {
   constructor(
@@ -112,72 +113,58 @@ class LLMClient {
   }
 
   async generateImage(prompt, outputPath = "generated_image.png") {
-    const formData = new FormData();
-    formData.append("mode", "text-to-image");
-    formData.append("aspect_ratio", "1:1");
-    formData.append("output_format", "png");
-    formData.append("model", "sd3");
+    const myHeaders = new Headers();
+    myHeaders.append("Accept", "image/jpeg");
+    myHeaders.append("Authorization", "fw_3ZRhMZ4RNnUv5u3GUtKfHeJz");
+    myHeaders.append("Content-Type", "application/json");
 
-    // try {
-    async () => {
-      const response = await fetch(
-        "https://api.fireworks.ai/inference/v1/image_generation/accounts/fireworks/models/stable-diffusion-xl-1024-v1-0",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "image/jpeg",
-            Authorization: `Bearer ${this.apiKey}`,
-          },
-          body: JSON.stringify({
-            cfg_scale: 7,
-            height: 1024,
-            width: 1024,
-            steps: 30,
-            seed: 0,
-            safety_check: false,
-            prompt,
-          }),
-        }
-      );
+    const raw = JSON.stringify({
+      cfg_scale: 7,
+      height: 1024,
+      width: 1024,
+      steps: 30,
+      seed: 0,
+      safety_check: false,
+      prompt,
+    });
 
-      // To process the response and get the image:
-      console.log("response = ", response);
-      const buffer = await response.arrayBuffer();
-      console.log("buffer = ", buffer);
-      return buffer;
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
     };
 
-    //   fs.writeFile("hi.jpg", Buffer.from(buffer), () =>
-    //     console.log("finished downloading!")
-    //   );
-    // })().catch(console.error);
+    const response = await fetch(
+      "https://api.fireworks.ai/inference/v1/image_generation/accounts/fireworks/models/stable-diffusion-xl-1024-v1-0",
+      requestOptions
+    );
 
-    //   const buffer = await response.arrayBuffer();
+    if (!response.ok) {
+      console.error("Failed to fetch image");
+      return;
+    }
 
-    //   console.log("test2");
-    //   const base64Image = Buffer.from(buffer).toString("base64");
+    const blob = await response.blob();
+    const base64Image = await this.convertBlobToBase64(blob);
 
-    //   console.log("test3");
-    //   // Use the SupabaseService to save the image
-    //   const { default: SupabaseService } = await import(
-    //     "../services/supabaseService"
-    //   );
+    // Upload to Supabase
+    await supabaseService.uploadBase64Image(
+      base64Image,
+      "dream-images",
+      "generated-image.png"
+    );
+  }
 
-    //   console.log("test4");
-    //   const savedImage = await SupabaseService.uploadBase64Image(
-    //     outputPath,
-    //     Buffer.from(base64Image, "base64"),
-    //     "image/png"
-    //   );
-
-    //   if (!savedImage) {
-    //     throw new Error("Error uploading image to Supabase");
-    //   }
-
-    //   console.log("Image successfully uploaded to Supabase!", savedImage);
-    // } catch (error) {
-    //   console.error("Error generating image:", error);
+  convertBlobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        resolve(reader.result); // Keep "data:image/png;base64,..."
+      };
+      reader.onerror = reject;
+    });
   }
 }
 
