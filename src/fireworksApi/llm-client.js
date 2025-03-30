@@ -14,7 +14,10 @@ class LLMClient {
     this.temperature = temperature;
   }
 
-  async generateText(prompt, systemMessage = "", user = "") {
+  async generateText({ prompt, systemMessage = "", user = "" }) {
+    console.log("Prompt: ", prompt);
+    console.log("System Message: ", systemMessage);
+    console.log("User: ", user);
     const options = {
       method: "POST",
       headers: {
@@ -36,7 +39,7 @@ class LLMClient {
         "https://api.fireworks.ai/inference/v1/chat/completions",
         options
       );
-      const test = await response.json()
+      const test = await response.json();
       console.log("After fetching", test.choices[0].message.content);
       const data = test;
       return data;

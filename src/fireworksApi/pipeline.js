@@ -31,7 +31,9 @@ class DreamAnalysisPipeline {
     }
 
     const prompt = formatAnalysisPrompt(this.dreamData);
-    const analysisData = await this.llmClient.generateText(prompt);
+    const analysisData = await this.llmClient.generateText({
+      systemMessage: prompt,
+    });
     console.log("Analysis data = ", analysisData);
 
     this.dreamData.analysis = analysisData.analysis;
