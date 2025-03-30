@@ -53,7 +53,8 @@ class DreamAnalysisPipeline {
     // Use generateStructuredResponse instead of generateText
     const completion = await this.llmClient.generateStructuredResponse(
       DreamAnalysisSchema,
-      messages
+      messages,
+      null
     );
 
     // Extract the validated data from the parsed response
