@@ -152,22 +152,13 @@ class DreamAnalysisService {
     mood: string = ""
   ): Promise<Analysis> {
     try {
-      const test = await fireWorksAnalyzeDream(dream, mood);
-      console.log("test", test);
-      const data = {
-        symbols: [
-          { symbol: "Water", meaning: "Emotional state or subconscious mind" },
-          { symbol: "Flying", meaning: "Freedom and escape from limitations" },
-        ],
-        analysis: `Your dream reflects a ${mood} emotional state.`,
-        advice: "Consider journaling your feelings to gain clarity.",
-      };
+      const data = await fireWorksAnalyzeDream(dream, mood);
 
       // Transform the API response to our Analysis interface
       return {
-        symbolism: data.symbols || [],
-        emotional: data.analysis || "",
-        advice: dreamAdvice[mood] || dreamAdvice["default"],
+        symbolism: data?.symbols || [],
+        emotional: data?.analysis || "",
+        advice: data?.advice || "",
       };
     } catch (error) {
       console.error("Error analyzing dream - will use mock data:", error);

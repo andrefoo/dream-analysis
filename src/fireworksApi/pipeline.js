@@ -33,6 +33,8 @@ class DreamAnalysisPipeline {
         "User's description of how the dream relates to their life",
       analysis: "",
       imagePrompt: "",
+      symbols: [],
+      advice: "",
     };
     return this.dreamData;
   }
