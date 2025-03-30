@@ -91,9 +91,12 @@ class LLMClient {
         objectName && parsedContent[objectName]
           ? parsedContent[objectName]
           : parsedContent;
-      
-      console.log("Object to validate:", JSON.stringify(objectToValidate, null, 2));
-      
+
+      console.log(
+        "Object to validate:",
+        JSON.stringify(objectToValidate, null, 2)
+      );
+
       // Validate with Zod schema
       const validatedData = schema.parse(objectToValidate);
 
@@ -115,7 +118,7 @@ class LLMClient {
     }
   }
 
-  async generateImage(prompt, outputPath = "generated_image.png") {
+  async generateImage(prompt) {
     const myHeaders = new Headers();
     myHeaders.append("Accept", "image/jpeg");
     myHeaders.append("Authorization", "fw_3ZRhMZ4RNnUv5u3GUtKfHeJz");
@@ -148,15 +151,23 @@ class LLMClient {
       return;
     }
 
-    const blob = await response.blob();
-    const base64Image = await this.convertBlobToBase64(blob);
+    const blob = await response.blob(); // Get the image as a Blob
+
+    if (!blob || blob.size === 0) {
+      console.error("Error: Received an empty or invalid image blob.");
+      return;
+    }
+
+    console.log("blob=", blob);
 
     // Upload to Supabase
-    await supabaseService.uploadBase64Image(
-      base64Image,
-      "dream-images",
-      "generated-image.png"
-    );
+    const test = await supabaseService.uploadBase64Image(blob, "dream-images");
+    console.log("test12312312312 = ", test);
+    // if (error) {
+    //   console.error("Error uploading image to Supabase:", error);
+    //   return;
+    // }
+    // console.log("Image uploaded to Supabase:", data);
   }
 
   convertBlobToBase64(blob) {

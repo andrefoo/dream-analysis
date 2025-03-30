@@ -115,23 +115,17 @@ class SupabaseService {
   }
 
   async uploadBase64Image(
-    base64Image: string, // Full data URL (e.g., "data:image/png;base64,...")
+    blob: any, // React Native blob object
     bucketName: string,
-    fileName: string
+    fileName: string = `generated-image-${Date.now()}.png`
   ) {
     const { data, error } = await this.supabase.storage
       .from(bucketName)
-      .upload(fileName, base64Image, {
-        contentType: "image/png", // Ensure correct type
+      .upload(fileName, blob, {
+        contentType: blob.type || "image/png",
         cacheControl: "3600",
         upsert: false,
       });
-
-    if (error) {
-      console.error("Error uploading image:", error);
-    } else {
-      console.log("Image uploaded successfully:", data);
-    }
   }
 }
 
