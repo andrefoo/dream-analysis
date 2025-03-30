@@ -23,7 +23,7 @@ class LLMClient {
       },
       body: JSON.stringify({
         model: this.model,
-        messages: [{ role: "system", content: systemMessage }],
+        messages: [{ role: "system", content: prompt }],
         max_tokens: this.maxTokens,
         temperature: this.temperature,
         user,
@@ -36,7 +36,7 @@ class LLMClient {
         "https://api.fireworks.ai/inference/v1/chat/completions",
         options
       );
-      const test = await response.json()
+      const test = await response.json();
       console.log("After fetching", test.choices[0].message.content);
       const data = test;
       return data;

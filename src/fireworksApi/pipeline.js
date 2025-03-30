@@ -8,12 +8,12 @@ class DreamAnalysisPipeline {
     this.dreamData = null;
   }
 
-  collectDreamInformation() {
+  collectDreamInformation(dream, mood) {
     // This function should collect input from the user via a web interface or command-line prompts
     this.dreamData = {
-      narrative: "User-provided narrative of the dream",
+      narrative: dream,
       mainSymbols: ["Symbol1", "Symbol2"],
-      primaryEmotion: "Calm",
+      primaryEmotion: mood,
       emotionalIntensity: 4,
       lifeConnection:
         "User's description of how the dream relates to their life",
@@ -31,6 +31,7 @@ class DreamAnalysisPipeline {
     }
 
     const prompt = formatAnalysisPrompt(this.dreamData);
+    console.log("Prompt = ", prompt);
     const analysisData = await this.llmClient.generateText(prompt);
     console.log("Analysis data = ", analysisData);
 
@@ -69,13 +70,14 @@ class DreamAnalysisPipeline {
     console.log(`Dream data saved to ${filePath}`);
   }
 
-  async runPipeline() {
-    this.collectDreamInformation();
+  async runPipeline(dream, mood) {
+    this.collectDreamInformation(dream, mood);
 
     await this.generateAnalysis();
-    const imagePath = await this.generateDreamImage();
+    // const imagePath = await this.generateDreamImage();
 
-    this.saveDreamData("./dream_results/dream_analysis.json");
+    // this.saveDreamData("./dream_results/dream_analysis.json");
+    console.log("Dream data = ", this.dreamData);
     return this.dreamData;
   }
 }

@@ -117,7 +117,7 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
         user_id: 'anonymous' // You can implement user authentication later
       };
       
-      await SupabaseService.saveDream(dreamData);
+      // await SupabaseService.saveDream(dreamData);
       
       // Navigate to analysis screen
       navigation.navigate('Analysis', { 
@@ -174,7 +174,12 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
   );
 };
 
-const DetailedInputScreen = ({ route, navigation }: { route: { params: { dream: string; mood: string } }, navigation: NavigationProp }) => {
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+type DetailedInputScreenProps = NativeStackScreenProps<RootStackParamList, 'DetailedInput'>;
+
+const DetailedInputScreen = ({ route, navigation }: DetailedInputScreenProps) => {
   const { dream, mood } = route.params;
   const [emotionalIntensity, setEmotionalIntensity] = useState(3);
   const [lifeConnection, setLifeConnection] = useState('');
@@ -247,7 +252,7 @@ const DetailedInputScreen = ({ route, navigation }: { route: { params: { dream: 
         user_id: 'anonymous'
       };
       
-      await SupabaseService.saveDream(dreamData);
+      // await SupabaseService.saveDream(dreamData);
       
       // Include dreamText and mood in the navigation
       navigation.navigate('Analysis', { 
@@ -659,7 +664,6 @@ export default function App() {
         }}
       >
         <Stack.Navigator
-        <Stack.Navigator
           initialRouteName="Intro"
           screenOptions={{
             headerStyle: {
@@ -705,7 +709,7 @@ export default function App() {
           />
           <Stack.Screen 
             name="DetailedInput" 
-            component={DetailedInputScreen}
+            component={DetailedInputScreen as React.ComponentType<any>}
             options={{ 
               title: 'Dream Details',
               contentStyle: {
@@ -743,7 +747,7 @@ export default function App() {
               },
             }}
           />
-        </Stack.Navigator>
+          </Stack.Navigator>
         
         {/* Bottom Navigation Bar */}
         <NavigationBarWithState />

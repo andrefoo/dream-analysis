@@ -1,6 +1,6 @@
 import axios from "axios";
 import fireWorksAnalyzeDream from "fireworksApi/main";
-import { Platform, Alert } from 'react-native';
+import { Platform, Alert } from "react-native";
 
 // Define global variables for backend availability
 const appState: {
@@ -118,7 +118,6 @@ function generateFallbackAnalysis(dream: string, mood: string): Analysis {
     advice,
   };
 }
-
 class DreamAnalysisService {
   // Base URL for the Flask backend
   // For Android emulator use 10.0.2.2 instead of localhost
@@ -127,65 +126,34 @@ class DreamAnalysisService {
   // For web, use localhost
   private static API_URL = "http://127.0.0.1:8000";
 
+  static async analyzeDreamDetailed(
+    dream: string,
+    mood: string = "",
+    mainSymbols: string[] = [],
+    emotionalIntensity: number = 3,
+    lifeConnection: string = ""
+  ): Promise<Analysis> {
+    console.log(`Connecting to backend at: ${this.API_URL}`);
+
+    // If no symbols were explicitly provided, extract some from the dream text
+    const symbols =
+      mainSymbols.length > 0
+        ? mainSymbols
+        : dream
+            .split(" ")
+            .filter((word) => word.length > 5)
+            .slice(0, 3);
+
+    return await this.analyzeDream(dream, mood);
+  }
+
   static async analyzeDream(
     dream: string,
     mood: string = ""
   ): Promise<Analysis> {
     try {
-      //       console.log(`Checking backend health at 10.25.13.188:8000/api/health`);
-
-      //       // Perform health check
-      //       try {
-      //         let config = {
-      //           method: 'post',
-      //           maxBodyLength: Infinity,
-      //           url: 'https://api.fireworks.ai/inference/v1/chat/completions',
-      //           headers: { },
-      //           data : ''
-      //         };
-
-      //         const test = await axios.request(config);
-      //         // console.log("test=", test);
-      // console.log("haeha")
-      //         // const healthResponse = await fetch(`http://127.0.0.1:8000/api/health`);
-      //       } catch (error) {
-      //         console.error("Backend health check failed:", error);
-      //         appState.backendAvailable = false;
-      //         appState.hasCheckedBackendAvailability = true;
-      //         throw new Error("Backend is not available.");
-      //       }
-      //       console.log("Backend health check passed.");
-
-      //       console.log("Backend is healthy. Proceeding with dream analysis...");
-
-      //       // Prepare the configuration for the dream analysis request
-      //       const config = {
-      //         method: "post",
-      //         maxBodyLength: Infinity,
-      //         url: `10.25.13.188:8000/api/analyze-dream`,
-      //         headers: {
-      //           "Content-Type": "application/json",
-      //         },
-      //         data: JSON.stringify({
-      //           narrative: dream,
-      //           primaryEmotion: mood,
-      //           mainSymbols: dream
-      //             .split(" ")
-      //             .filter((word) => word.length > 5)
-      //             .slice(0, 3),
-      //         }),
-      //       };
-
-      //       // Make the API call to analyze the dream
-      //       const response = await axios.request(config);
-
-      //       if (!response || !response.data) {
-      //         throw new Error(`Backend responded with invalid data: ${response}`);
-      //       }
-
-      //       const data = response.data;
-      const test = await fireWorksAnalyzeDream();
-      console.log("test");
+      const test = await fireWorksAnalyzeDream(dream, mood);
+      console.log("test", test);
       const data = {
         symbols: [
           { symbol: "Water", meaning: "Emotional state or subconscious mind" },

@@ -16,10 +16,12 @@ const apiKey = process.env.EXPO_PUBLIC_FIREWORKS_API_KEY;
 console.log("apiKery= ", apiKey);
 const pipeline = new DreamAnalysisPipeline(apiKey);
 
-async function analyzeDream() {
+async function analyzeDream(dream, mood) {
   try {
     // console.log("\n=== Dream Analysis Application ===\n");
-    const result = await pipeline.runPipeline();
+    console.log("Dream: ", dream);
+    console.log("Mood: ", mood);
+    const result = await pipeline.runPipeline(dream, mood);
 
     // const outputPath = `${FileSystem.documentDirectory}${options.output}/dream_analysis.json`;
     // pipeline.saveDreamData(outputPath);
