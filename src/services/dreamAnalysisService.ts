@@ -100,24 +100,24 @@ class DreamAnalysisService {
   // Replace with your computer's actual local IP address
   private static API_URL = "http://192.168.1.X:8000"; // REPLACE X with your IP's last digits
   
-  static async analyzeDream(dream: string, mood: string = ''): Promise<Analysis> {
+  static async analyzeDreamDetailed(
+    dream: string, 
+    mood: string = '', 
+    mainSymbols: string[] = [], 
+    emotionalIntensity: number = 3, 
+    lifeConnection: string = ''
+  ): Promise<Analysis> {
     console.log(`Connecting to backend at: ${this.API_URL}`);
     
-    // Extract some potential symbols from the dream text
-    const symbols = dream
-      .split(' ')
-      .filter(word => word.length > 5)
-      .slice(0, 3);
-    
-    // Map mood to intensity
-    const emotionalIntensity = 
-      mood === 'peaceful' ? 2 : 
-      mood === 'scary' ? 5 : 
-      mood === 'sad' ? 4 :
-      mood === 'exciting' ? 4 : 3;
+    // If no symbols were explicitly provided, extract some from the dream text
+    const symbols = mainSymbols.length > 0 
+      ? mainSymbols 
+      : dream
+          .split(' ')
+          .filter(word => word.length > 5)
+          .slice(0, 3);
     
     try {
-      // Making a direct fetch call to the Flask backend with Python modules
       console.log('Sending request to Python backend...');
       const response = await fetch(`${this.API_URL}/api/analyze-dream`, {
         method: 'POST',
@@ -129,7 +129,7 @@ class DreamAnalysisService {
           mainSymbols: symbols,
           primaryEmotion: mood,
           emotionalIntensity: emotionalIntensity,
-          lifeConnection: "This connects to my current life situation."
+          lifeConnection: lifeConnection || "This connects to my current life situation."
         }),
       });
 
@@ -137,7 +137,6 @@ class DreamAnalysisService {
         throw new Error(`Backend responded with status: ${response.status}`);
       }
 
-      // Get the analysis from the Python backend
       const data = await response.json();
       console.log('Successfully received response from Python backend:', data);
       
@@ -145,25 +144,29 @@ class DreamAnalysisService {
         throw new Error(data.error || "Unknown error from backend");
       }
       
-      // Transform the API response to our Analysis interface
       return {
         symbolism: data.symbols || [],
         emotional: data.analysis || "Could not generate analysis",
-        advice: "Consider exploring these dream symbols further.",
+        advice: data.advice || "Consider exploring these dream symbols further.",
       };
     } catch (error) {
       console.error('Error connecting to Python backend:', error);
       
-      // Show error alert
       Alert.alert(
         'Backend Connection Error',
         'Could not connect to the Python backend. Make sure the server is running and check the server\'s IP address in the configuration.',
         [{ text: 'OK' }]
       );
       
-      // Rethrow to let the UI handle it
-      throw error;
+      // Use the fallback implementation as a last resort
+      return generateFallbackAnalysis(dream, mood);
     }
+  }
+
+  // Keep the original analyzeDream for backward compatibility
+  static async analyzeDream(dream: string, mood: string = ''): Promise<Analysis> {
+    // Simply call the new detailed method with default values
+    return this.analyzeDreamDetailed(dream, mood);
   }
 }
 

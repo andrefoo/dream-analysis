@@ -5,6 +5,7 @@ import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-na
 import { Brain, Heart, Star, Zap, Moon, Send, ArrowRight, ChevronLeft, ChevronRight, Album, Plus, BarChart, Trash2, Clock, Lightbulb, BookOpen, Calendar } from 'lucide-react-native';
 import DreamAnalysisService from './src/services/dreamAnalysisService';
 import SupabaseService, { DreamData, SavedDream } from './src/services/supabaseService';
+import Slider from '@react-native-community/slider';
 
 interface SymbolismItem {
   symbol: string;
@@ -120,6 +121,13 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
     } finally {
       setIsLoading(false);
     }
+
+  const continueToDetailed = () => {
+    if (dream.trim().length === 0) {
+      // You could add an alert here
+      return;
+    }
+    navigation.navigate('DetailedInput', { dream, mood });
   };
 
   return (
@@ -144,10 +152,143 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
           placeholder="Enter your mood..."
           placeholderTextColor="#ffffff80"
         />
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={continueToDetailed}
+        >
+          <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
+};
+
+const DetailedInputScreen = ({ route, navigation }: { route: { params: { dream: string; mood: string } }, navigation: NavigationProp }) => {
+  const { dream, mood } = route.params;
+  const [emotionalIntensity, setEmotionalIntensity] = useState(3);
+  const [lifeConnection, setLifeConnection] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [extractedKeywords, setExtractedKeywords] = useState<string[]>([]);
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Extract keywords from dream narrative when component mounts
+    const keywords = extractKeywords(dream);
+    setExtractedKeywords(keywords);
+  }, [dream]);
+
+  const extractKeywords = (text: string): string[] => {
+    // List of common stopwords to exclude
+    const stopwords = [
+      'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'with', 
+      'by', 'about', 'as', 'into', 'like', 'through', 'after', 'over', 'between', 
+      'out', 'of', 'during', 'without', 'before', 'under', 'around', 'among',
+      'is', 'am', 'are', 'was', 'were', 'be', 'been', 'being',
+      'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should',
+      'can', 'could', 'may', 'might', 'must',
+      'it', 'its', 'it\'s', 'they', 'them', 'their', 'theirs', 'that', 'this', 'those', 'these',
+      'i', 'me', 'my', 'mine', 'you', 'your', 'yours', 'he', 'him', 'his', 'she', 'her', 'hers',
+      'we', 'us', 'our', 'ours',
+      'there', 'here', 'where', 'when', 'why', 'how', 'what', 'who', 'whom',
+      'then', 'than', 'if', 'else', 'so'
+    ];
+    
+    // Extract words, excluding stopwords and duplicates
+    const words = text
+      .toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
+      .split(/\s+/)
+      .filter(word => !stopwords.includes(word))  // Filter out stopwords instead of by length
+      .filter((word, index, self) => self.indexOf(word) === index);  // Remove duplicates
+    
+    // Return up to 10 keywords
+    return words.slice(0, 10);
+  };
+
+  const toggleKeyword = (keyword: string) => {
+    if (selectedKeywords.includes(keyword)) {
+      setSelectedKeywords(selectedKeywords.filter(k => k !== keyword));
+    } else {
+      setSelectedKeywords([...selectedKeywords, keyword]);
+    }
+  };
+
+  const analyzeDream = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Just use selectedKeywords directly since we're not using mainSymbols anymore
+      const symbolsArray = selectedKeywords;
+      
+      const analysis = await DreamAnalysisService.analyzeDreamDetailed(
+        dream, 
+        mood, 
+        symbolsArray, 
+        emotionalIntensity, 
+        lifeConnection
+      );
+      
+      navigation.navigate('Analysis', { analysis });
+    } catch (error) {
+      console.error('Error analyzing dream:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.label}>Important symbols or objects in your dream:</Text>
+        <View style={styles.tagsContainer}>
+          {extractedKeywords.map((keyword, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.tagButton,
+                selectedKeywords.includes(keyword) && styles.tagButtonSelected
+              ]}
+              onPress={() => toggleKeyword(keyword)}
+            >
+              <Text 
+                style={[
+                  styles.tagButtonText,
+                  selectedKeywords.includes(keyword) && styles.tagButtonTextSelected
+                ]}
+              >
+                {keyword}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         
-        {error && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
+        <Text style={styles.label}>Emotional intensity: {emotionalIntensity.toFixed(1)}</Text>
+        <View style={styles.sliderContainer}>
+          <Text style={styles.sliderLabel}>Mild</Text>
+          <Slider
+            style={styles.slider}
+            value={emotionalIntensity}
+            onValueChange={setEmotionalIntensity}
+            minimumValue={1}
+            maximumValue={5}
+            step={0.1}
+            minimumTrackTintColor="#007AFF"
+            maximumTrackTintColor="#ffffff40"
+            thumbTintColor="#007AFF"
+          />
+          <Text style={styles.sliderLabel}>Intense</Text>
+        </View>
+        
+        <Text style={styles.label}>How does this dream connect to your current life?</Text>
+        <TextInput
+          style={[styles.input, { minHeight: 80 }]}
+          multiline
+          value={lifeConnection}
+          onChangeText={setLifeConnection}
+          placeholder="Describe any connections to your waking life..."
+          placeholderTextColor="#ffffff80"
+          textAlignVertical="top"
+        />
         
         <TouchableOpacity 
           style={[styles.button, (isLoading || !dream || !mood) && styles.buttonDisabled]}
@@ -155,7 +296,7 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
           disabled={isLoading || !dream || !mood}
         >
           <Text style={styles.buttonText}>
-            {isLoading ? 'Analyzing...' : 'Analyze Dream'}
+            {isLoading ? 'Analyzing...' : 'Generate Analysis'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -531,6 +672,26 @@ export default function App() {
               title: 'Record Your Dream',
               contentStyle: {
                 backgroundColor: '#f6f2ef',
+              },
+            }}
+          />
+          <Stack.Screen 
+            name="DetailedInput" 
+            component={DetailedInputScreen}
+            options={{ 
+              title: 'Dream Details',
+              contentStyle: {
+                backgroundColor: '#000',
+              },
+            }}
+          />
+          <Stack.Screen 
+            name="DetailedInput" 
+            component={DetailedInputScreen}
+            options={{ 
+              title: 'Dream Details',
+              contentStyle: {
+                backgroundColor: '#000',
               },
             }}
           />
@@ -958,5 +1119,91 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 10,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 20,
+    width: '100%',
+  },
+  tagButton: {
+    backgroundColor: '#ffffff15',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    margin: 4,
+    borderWidth: 1,
+    borderColor: '#ffffff30',
+  },
+  tagButtonSelected: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  tagButtonText: {
+    color: '#ffffffaa',
+    fontSize: 14,
+  },
+  tagButtonTextSelected: {
+    color: '#fff',
+    fontWeight: '500',
+  },
+  sliderContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  slider: {
+    flex: 1,
+    height: 40,
+    marginHorizontal: 10,
+  },
+  sliderLabel: {
+    fontSize: 12,
+    color: '#ffffff80',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 20,
+    width: '100%',
+  },
+  tagButton: {
+    backgroundColor: '#ffffff15',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    margin: 4,
+    borderWidth: 1,
+    borderColor: '#ffffff30',
+  },
+  tagButtonSelected: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  tagButtonText: {
+    color: '#ffffffaa',
+    fontSize: 14,
+  },
+  tagButtonTextSelected: {
+    color: '#fff',
+    fontWeight: '500',
+  },
+  sliderContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  slider: {
+    flex: 1,
+    height: 40,
+    marginHorizontal: 10,
+  },
+  sliderLabel: {
+    fontSize: 12,
+    color: '#ffffff80',
   },
 }); 
