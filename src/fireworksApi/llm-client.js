@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 class LLMClient {
   constructor(
     apiKey,
-    model = "accounts/fireworks/models/deepseek-v3-0324",
+    model = "accounts/fireworks/models/llama-v3p3-70b-instruct",
     maxTokens = 2000,
     temperature = 1
   ) {
@@ -23,7 +23,7 @@ class LLMClient {
       },
       body: JSON.stringify({
         model: this.model,
-        messages: [{ role: "system", content: systemMessage}],
+        messages: [{ role: "system", content: systemMessage }],
         max_tokens: this.maxTokens,
         temperature: this.temperature,
         user,
@@ -36,8 +36,9 @@ class LLMClient {
         "https://api.fireworks.ai/inference/v1/chat/completions",
         options
       );
-      console.log("After fetching", response);
-      const data = await response.json();
+      const test = await response.json()
+      console.log("After fetching", test.choices[0].message.content);
+      const data = test;
       return data;
     } catch (error) {
       console.error("Error generating text:", error);

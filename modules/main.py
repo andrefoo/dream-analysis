@@ -8,7 +8,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="Dream Analysis Application")
     parser.add_argument("--model", type=str, 
-                        default="accounts/fireworks/models/deepseek-v3-0324",
+                        default="accounts/fireworks/models/llama-v3p3-70b-instruct",
                         help="LLM model to use for analysis")
     parser.add_argument("--temperature", type=float, default=0.6,
                         help="Temperature for LLM generation (0.0-1.0)")
