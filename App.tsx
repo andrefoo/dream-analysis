@@ -121,6 +121,7 @@ const InputScreen = ({ navigation }: { navigation: NavigationProp }) => {
     } finally {
       setIsLoading(false);
     }
+  };
 
   const continueToDetailed = () => {
     if (dream.trim().length === 0) {
@@ -217,7 +218,6 @@ const DetailedInputScreen = ({ route, navigation }: { route: { params: { dream: 
     try {
       setIsLoading(true);
       
-      // Just use selectedKeywords directly since we're not using mainSymbols anymore
       const symbolsArray = selectedKeywords;
       
       const analysis = await DreamAnalysisService.analyzeDreamDetailed(
@@ -228,7 +228,23 @@ const DetailedInputScreen = ({ route, navigation }: { route: { params: { dream: 
         lifeConnection
       );
       
-      navigation.navigate('Analysis', { analysis });
+      // Also save to Supabase like the InputScreen does
+      const dreamData: DreamData = {
+        dream_text: dream,
+        mood: mood,
+        analysis: analysis.emotional,
+        symbols: analysis.symbolism,
+        user_id: 'anonymous'
+      };
+      
+      await SupabaseService.saveDream(dreamData);
+      
+      // Include dreamText and mood in the navigation
+      navigation.navigate('Analysis', { 
+        analysis,
+        dreamText: dream,
+        mood: mood
+      });
     } catch (error) {
       console.error('Error analyzing dream:', error);
     } finally {
@@ -272,9 +288,9 @@ const DetailedInputScreen = ({ route, navigation }: { route: { params: { dream: 
             minimumValue={1}
             maximumValue={5}
             step={0.1}
-            minimumTrackTintColor="#007AFF"
-            maximumTrackTintColor="#ffffff40"
-            thumbTintColor="#007AFF"
+            minimumTrackTintColor="#3269ad"
+            maximumTrackTintColor="#00001020"
+            thumbTintColor="#3269ad"
           />
           <Text style={styles.sliderLabel}>Intense</Text>
         </View>
@@ -286,7 +302,7 @@ const DetailedInputScreen = ({ route, navigation }: { route: { params: { dream: 
           value={lifeConnection}
           onChangeText={setLifeConnection}
           placeholder="Describe any connections to your waking life..."
-          placeholderTextColor="#ffffff80"
+          placeholderTextColor="#00001080"
           textAlignVertical="top"
         />
         
@@ -681,17 +697,7 @@ export default function App() {
             options={{ 
               title: 'Dream Details',
               contentStyle: {
-                backgroundColor: '#000',
-              },
-            }}
-          />
-          <Stack.Screen 
-            name="DetailedInput" 
-            component={DetailedInputScreen}
-            options={{ 
-              title: 'Dream Details',
-              contentStyle: {
-                backgroundColor: '#000',
+                backgroundColor: '#f6f2ef',
               },
             }}
           />
@@ -1127,20 +1133,20 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tagButton: {
-    backgroundColor: '#ffffff15',
+    backgroundColor: '#00001010',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
     margin: 4,
     borderWidth: 1,
-    borderColor: '#ffffff30',
+    borderColor: '#00001020',
   },
   tagButtonSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: '#3269ad',
+    borderColor: '#3269ad',
   },
   tagButtonText: {
-    color: '#ffffffaa',
+    color: '#000010cc',
     fontSize: 14,
   },
   tagButtonTextSelected: {
@@ -1161,49 +1167,6 @@ const styles = StyleSheet.create({
   },
   sliderLabel: {
     fontSize: 12,
-    color: '#ffffff80',
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 20,
-    width: '100%',
-  },
-  tagButton: {
-    backgroundColor: '#ffffff15',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    margin: 4,
-    borderWidth: 1,
-    borderColor: '#ffffff30',
-  },
-  tagButtonSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  tagButtonText: {
-    color: '#ffffffaa',
-    fontSize: 14,
-  },
-  tagButtonTextSelected: {
-    color: '#fff',
-    fontWeight: '500',
-  },
-  sliderContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  slider: {
-    flex: 1,
-    height: 40,
-    marginHorizontal: 10,
-  },
-  sliderLabel: {
-    fontSize: 12,
-    color: '#ffffff80',
+    color: '#00001080',
   },
 }); 
