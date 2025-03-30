@@ -13,6 +13,19 @@ interpretations. Be insightful yet concise.
 
 Also create an abstract visual representation that captures the essence of this dream using color blobs. 
 The visual description should be vivid, specific, and incorporate the emotional tone of the dream.
+
+Your response should be in JSON format with the following structure:
+{
+  "interpretation": "Your insightful interpretation of the dream",
+  "symbols": [
+    {
+      "title": "Symbol name",
+      "explanation": "Explanation of what this symbol represents in the dream"
+    }
+  ],
+  "advice": "Practical advice for the dreamer based on the interpretation",
+  "imagePrompt": "Detailed visual description for generating an image"
+}
 `;
 
 const IMAGE_GENERATION_PROMPT = `
