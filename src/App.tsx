@@ -23,6 +23,7 @@ const dreamAPI: DreamAnalysisAPI = {
   analyzeDream: async (dreamText: string, mood: string): Promise<{ analysis: string, symbols?: SymbolismItem[] }> => {
     try {
       // Make a fetch call to the Python backend using the modules
+      console.log("GHi")
       const response = await fetch('/api/analyze-dream', {
         method: 'POST',
         headers: {

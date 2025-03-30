@@ -6,7 +6,7 @@ import random
 from typing import List, Dict, Any
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type"])  # Enable CORS for all routes and origins
 
 # Predefined dream analysis responses
 DREAM_ANALYSES = [
@@ -31,7 +31,7 @@ DREAM_SYMBOLS = {
     "family": "Represents your relationship with your roots, heritage, and core emotional connections."
 }
 
-@app.route('/api/analyze-dream', methods=['POST'])
+@app.route('/api/analyze-dream', methods=['POST', 'GET'])
 def analyze_dream():
     # Get request data
     data = request.json
@@ -92,7 +92,14 @@ def analyze_dream():
             'analysis': "Your dream suggests changes in your life that require careful consideration. The symbols point to a need for introspection during this time of transition."
         }), 500
 
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'success': True,
+        'message': "Backend is running and reachable."
+    })
+
 if __name__ == '__main__':
     # Run the Flask app
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True) 
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='127.0.0.1', port=port, debug=True)  # Bind to localhost to avoid access issues
