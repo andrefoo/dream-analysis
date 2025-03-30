@@ -1,6 +1,20 @@
 import * as FileSystem from "expo-file-system";
 import LLMClient from "./llm-client";
 import { formatAnalysisPrompt, formatImagePrompt } from "./prompts.js";
+import { z } from "zod";
+
+// Define the Zod schema for dream analysis response
+const DreamAnalysisSchema = z.object({
+  interpretation: z.string(),
+  symbols: z.array(
+    z.object({
+      title: z.string(),
+      explanation: z.string()
+    })
+  ),
+  advice: z.string(),
+  imagePrompt: z.string()
+});
 
 class DreamAnalysisPipeline {
   constructor(apiKey, llmClient = new LLMClient(apiKey)) {
@@ -32,10 +46,27 @@ class DreamAnalysisPipeline {
 
     const prompt = formatAnalysisPrompt(this.dreamData);
     console.log("Prompt = ", prompt);
-    const analysisData = await this.llmClient.generateText(prompt);
-    console.log("Analysis data = ", analysisData);
-
-    this.dreamData.analysis = analysisData.analysis;
+    
+    // Create messages array for structured response
+    const messages = [
+      { role: "system", content: prompt }
+    ];
+    
+    // Use generateStructuredResponse instead of generateText
+    const completion = await this.llmClient.generateStructuredResponse(
+      DreamAnalysisSchema,
+      messages
+    );
+    
+    console.log("Analysis data = ", completion);
+    
+    // Extract the validated data from the parsed response
+    const analysisData = completion.choices[0].message.parsed;
+    
+    // Update dreamData with the analysis information
+    this.dreamData.analysis = analysisData.interpretation;
+    this.dreamData.symbols = analysisData.symbols;
+    this.dreamData.advice = analysisData.advice;
     this.dreamData.imagePrompt = analysisData.imagePrompt;
 
     console.log("Dream data = ", this.dreamData);
